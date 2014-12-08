@@ -1,0 +1,146 @@
+<!--
+This file is designed to be imported by all builds that use Ivy for dependency management.
+It creates the task definitions related to Ivy, and defines a number of build targets to resolve
+and download dependencies, report on the dependency tree, and to publish artifacts to
+Ivy repositories.
+-->
+<project name="common" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <!-- load the Ivy related build properties -->
+    <property file="ivy/ivy_build.properties"/>
+
+    <!-- define the Ivy settings file to use -->
+    <property name="ivy.file" value="ivy/ivy.xml"/>
+
+    <!-- where to put our Ivy downloaded libraries -->
+    <property name="ivy.lib.dir" value="ivy-lib"/>
+
+    <property name="ivy.task.lib.dir" value="ivy/ivy-task-lib"/>
+
+
+
+    <path id="ivy-task-lib.path.id">
+        <fileset dir="${ivy.task.lib.dir}" includes="*.jar"/>
+    </path>
+
+    <target name="ivy-taskdef">
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+             uri="antlib:org.apache.ivy.ant"
+             classpathref="ivy-task-lib.path.id"/>
+        <!-- Tell Ivy the settings file to use -->
+        <ivy:settings file="ivy/ivysettings.xml"/>
+    </target>
+
+    <!-- define a classpath that references everything downloaded by Ivy -->
+    <path id="ivy-lib.path.id">
+        <fileset dir="${ivy.lib.dir}"/>
+    </path>
+
+    <!-- =================================
+          target: resolve
+         ================================= -->
+    <target name="resolve" depends="clean-ivy-lib,ivy-taskdef" description="--> resolve and retrieve dependencies with Ivy">
+        <mkdir dir="${ivy.lib.dir}"/>
+        <!-- not usually necessary, ivy creates the directory IF there are dependencies -->
+        <!-- the call to resolve is not mandatory, retrieve makes an implicit call if we don't -->
+        <ivy:resolve file="${ivy.file}"/>
+        <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact].[ext]"/>
+    </target>
+
+    <!-- =================================
+          target: report
+         ================================= -->
+    <target name="report" depends="resolve,ivy-taskdef" description="--> generates a report of dependencies">
+        <mkdir dir="${ivy.report.dir}"/>
+        <!--ivy:report todir="${ivy.report.dir}" dot="true" outputpattern="report.[ext]"/-->
+        <ivy:report todir="${ivy.report.dir}" dot="true" outputpattern="[organisation]-[module]-[conf].[ext]"/>
+
+        <exec executable="dot" ><arg line="-Tpng report/report.dot -O"/></exec>
+    </target>
+
+    <!-- =================================
+          target: publish-local
+         ================================= -->
+    <target name="publish-local" depends="ivy-taskdef, package, resolve, local-version" description="--> publish this project in the local Ivy repository">
+        <delete file="${bld.dist.dir}/ivy.xml"/>
+        <ivy:publish artifactspattern="${bld.dist.dir}/[artifact].[ext]" 
+            resolver="user-local"  pubdate="${now}" 
+            status="integration" forcedeliver="true" 
+            revision="working"/>
+        
+        <echo message="project ${ant.project.name} published locally with version ${now}"/>
+    </target>
+
+    <!-- =================================
+          target: publish-shared
+         ================================= -->
+    <target name="publish-shared" depends="ivy-taskdef, package, resolve, version" description="--> publish this project in the public Ivy repository">
+        
+        <echo message="Publishing ${ant.project.name}, revision: ${version}"/>
+        <echo message="bld.dist.dir= ${bld.dist.dir}"/>
+        <echo message="using svn user ${svn.user}"/>
+        <delete file="${bld.dist.dir}/ivy.xml"/>
+        
+        <ivy:publish artifactspattern="${bld.dist.dir}/[artifact].[ext]" 
+                     resolver="jmatrix-ssh-shared" pubrevision="${ivy.new.revision}" 
+                     status="integration" update="true" revision="working"/>
+        <echo message="project ${ant.project.name} released with version ${ivy.new.revision}"/>
+    </target>
+
+    <!-- =================================
+          target: publish-public
+         ================================= -->
+    <target name="publish-public" depends="ivy-taskdef, package, resolve, version" description="--> publish this project in the public Ivy repository">
+        <echo message="Publishing ${ant.project.name}, revision: ${version}"/>
+        <echo message="using svn user ${svn.user}"/>
+        <delete file="${bld.dist.dir}/ivy.xml"/>
+        
+        <ivy:publish artifactspattern="${bld.dist.dir}/[artifact].[ext]" 
+                     resolver="jmatrix-ssh-public" pubrevision="${ivy.new.revision}" 
+                     status="release" revision="working"/>
+        <echo message="project ${ant.project.name} released with version ${ivy.new.revision}"/>
+    </target>
+
+    <target name="ivy-new-version" unless="ivy.new.revision" depends="ivy-taskdef">
+        <!-- asks to ivy an available version number -->
+        <ivy:info file="${ivy.file}"/>
+        <ivy:buildnumber organisation="${ivy.organisation}" 
+                         module="${ivy.module}" 
+                         defaultBuildNumber="1" revSep="."
+            revision="${ivy.major.revision}"/>
+    </target>
+
+    <target name="local-version">
+        <tstamp>
+            <format property="now" pattern="yyyyMMddHHmmss"/>
+        </tstamp>
+        <property name="ivy.new.revision" value="${module.version.target}-local-${now}"/>
+    </target>
+
+    <target name="version" depends="ivy-new-version">
+        <!-- create version file in classpath for later inclusion in jar -->
+        <echo message="ivy-new-version=${ivy.new.revision}"/>
+        <echo message="version=${ivy.new.revision}${line.separator}" 
+            file="${bld.classes.dir}/${ant.project.name}.properties" append="false" />
+
+        <!-- load generated version properties file -->
+        <property file="${bld.classes.dir}/${ant.project.name}.properties" />
+    </target>
+
+    <!-- =================================
+          target: clean-lib
+         ================================= -->
+    <target name="clean-ivy-lib" description="--> clean the project's Ivy libraries directory (dependencies)">
+        <delete includeemptydirs="true" dir="${ivy.lib.dir}"/>
+    </target>
+    <target name="clean-ivy">
+        <echo message="Cleaning ivy cache ${ivy.cache.dir}"/>
+        <delete dir="${ivy.cache.dir}"/>
+    </target>
+
+    <target name="noop"/>
+
+    <!-- This is to make Eclipse shut up.  Any build.xml that imports this file will have to implement this for real... -->
+    <target name="package"/>
+
+</project>

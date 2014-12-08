@@ -1,0 +1,4 @@
+export LINES
+export COLUMNS
+
+./run net.jmatrix.db.jsql.JSQL ${1+"$@"}

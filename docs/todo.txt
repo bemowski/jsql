@@ -1,0 +1,126 @@
+
+
+DONE 0) implement rollback from DB.
+
+GITHUB
+
+1) describe a version - essentially show the files
+
+2) Non-sql migration.  
+   - support regex out of the box.
+   - Java interface - Migration.apply, Migration.rollback
+   - Jackson to deserialize - chicken and egg - classnmae to 
+     deserialze to...
+     - deserialize to map - then get classname, then further
+       deserialize
+     - Introspection - setConnection(), apply(), rollback(),
+       checksum().
+   
+3) Unit Tests
+   - test w/ mysql
+   - test w/ Oracle
+
+4) github - without history
+
+5) config table for checksum calculation.
+
+
+
+
+Vagrant- 
+  - Create a vagrant box with oracle, mysql, hsql?  sql server?
+
+Colorize output.  
+  - basic output
+  - Pretty formatter 
+    - primary key differnt color
+    - Null in a grey.
+
+DBM
+  - sub schemas?  DBM being a subschema itself
+  - foreign key all dbm_log to dbm_version
+  - debug  
+    - look for statement count discrepencies
+    - look for changes in schema hash - indicating out of band schema modification
+    - warn when starting DBM if schema does not match filesystem.
+    - hash apply and rollback sql files - so we can see if the file was
+      modified since it was applied.  Requires schema change.
+  - For scriptability - all DBM commands must be available as command line switches.
+  - Better shema hashing - include tables, views, procedures
+  - DBM schema itself should be applied by DBM.
+  - rehash a current snapshot.
+  - config tables
+
+DONE Create "Action" Framework in DBM - Command pattern.
+  - Logic in DBM at any stage to Recommend a list of Actions. 
+  - Action: Init DBM Schema
+  - Action: ReapplyVersion - when recent version mismatch
+  - Action: Update to X.X.X - when disk versions are ahead of db versions.
+  - Action: Rollback to X.X.X - when DB Version are ahead of disk versions.
+
+CLI for DBM - Action based - each switch would be an action.
+Embed DBM 
+   - Maven Publish
+   - Execute recommeded Actions - simply "update"
+
+
+JSQL 
+DONE  - History and reconnect
+DONE    - pragmatic - base 64 enode passords - nothing more 
+  - Map (JProperteis) of parameters - like debug level, etc
+  - Console to mask passwords
+  - more usability 
+    - After configured and initially connected, with history
+     login as user X, and just type "jsql" or "dbm" - and it uses
+     historical values to reconnect.
+     
+  - Splash screen with link to web site.
+  
+  - Colorized output
+    - "console" object
+      - log, debug, warn
+      - output
+      - colorize methods 
+        - with color constants - RED, BLUE, GREEN, YELLOW
+        - consider terminals with backgrounds other than black
+        - There is only 1 console
+        - Console will introspect to find calling class short name for
+          error, warn methods.
+        - debug method controlled by -v command line switch or set command.
+  
+  - Create an example schema.  
+    - Example is a subsschema with many versions
+    - easy to see how apply and rollback work.
+
+set command: 
+  - completion.
+  - output: 
+JSQL>set
+   log
+      level DEBUG
+   connection
+      autocommit true
+      readonly false
+      schema
+      catalog
+   sqlrunner
+      failonerror false
+      showoutput true
+      
+Output as object.field.value - and allow set to mutate, with completion
+
+JSQL>history
+  [20] select * from foo;
+  [19] reconnect
+  [18] set autocommit false
+  [17] ...
+  
+store history session-to-session
+  
+JSQL>describe [tablename]
+
+if show tables has been called, cache and use to complete describe command
+
+DONE show more description of table - to includ if it is indexed, primary key colums, etc.
+
+   

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--
+    This ant script can be used to install ivy into your ant environment.
+    To execute it, type ant -f install-ivy.xml
+-->
+<project name="install-ivy" default="install-local">
+
+    <!-- The latest jars and version information come from this URL -->
+    <!-- property url="https://svn.jmatrix.net/ivy/software/ivy.properties"/ -->
+
+    <property name="ivy-task-lib" value="ivy/ivy-task-lib"/>
+    <property name="root.url" value="https://svn.jmatrix.net/ivy/software"/>
+    
+    
+    <!-- This is required to allow ANT GET task to ignore HTTP SSL Errors from Hudson's self-signed-cert -->
+    <target name="set-ssl-trust" description="Ignore HTTP SSL Errors">
+        <java classname="SSLUtils"
+              failonerror="true"
+              fork="false">
+            <classpath>
+                <pathelement location="ivy"/>
+            </classpath>
+        </java>
+    </target>
+    
+   <!-- Install ivy & ivysvn into ${ant.home} -->
+   <target name="install-local" depends="set-ssl-trust">
+      <mkdir dir="${ivy-task-lib}"/>
+      <echo message="Installing ivy"/>
+       
+      <scp file="bemo@jmatrix.net:/home/bemo/ivy-repo/ivy/apache-ivy-2.3.0/ivy-2.3.0.jar"
+           todir="${ivy-task-lib}"
+           keyfile="${user.home}/.ssh/id_dsa"/>
+       <scp file="bemo@jmatrix.net:/home/bemo/ivy-repo/ivy/apache-ivy-2.3.0/lib/jsch-0.1.31.jar"
+            todir="${ivy-task-lib}"
+            keyfile="${user.home}/.ssh/id_dsa"/>
+   </target>
+</project>

@@ -1,0 +1,41 @@
+JSQL Release Highlights
+
+
+1.2.3 07.dec.2014
+      - Mask passwords when connecting
+      - Recommend manual rollback action
+      - V2.1 schema, store rollback when possible.
+        - automatic rollbacks
+      - fixed checksum for current version
+
+1.2.2 - maven packaging.
+
+1.2.1 - packaging for deployment.
+      - lock check and release in cli
+
+1.2.0 - Action Framework for DBM.
+
+1.1.2 - 21.nov.2014
+      - splash screen
+
+1.1.1 - Show Procedures
+      - describe procedure
+      - call procedure help
+
+1.1.0 - DBM V2 schema
+      - database locking based on primary key - distributed execution lock.
+      
+1.0.6 - Improved describe command.
+      - cleanup prompts on prepared statement.
+
+1.0.5 - execute file with @, including completion.
+      - capturing ctrl-c
+
+1.0.4 - add mysql jar.
+      - better dbm display of versions, status.
+
+1.0.3 - Single jar version.
+
+1.0.2 - JLine integration.
+
+1.0.0 - Ressurect code from old sqlminus/sqlrunner projects

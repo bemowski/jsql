@@ -1,0 +1,260 @@
+<project name="jsql" default="all" basedir=".">
+    <!-- Addin' the IVY Stuff... -->
+    <import file="ivy/ivy_build.xml" />
+
+    <!-- The equivalent of 'make all' -->
+    <target name="all" depends="init,assemble" />
+
+    <!-- Full build, deletes everything, and builds everything. -->
+    <target name="full" depends="dist" />
+    <property file="version.properties" />
+    <!-- Initialize all build variables. -->
+    <target name="init">
+        <tstamp />
+
+
+        <!-- useful to dump properties -->
+        <!-- echoproperties/ -->
+    </target>
+
+    <path id="project.class.path">
+        <fileset dir="ivy-lib/build">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+
+    <path id="junit.class.path">
+        <path refid="project.class.path" />
+        <pathelement location="build/classes" />
+        <fileset dir="junit">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete dir="build" />
+        <delete dir="dist-tmp" />
+        <delete dir="dist" />
+    </target>
+
+
+    <!-- Compile -->
+    <target name="compile" depends="init">
+        <mkdir dir="build/classes" />
+
+        <javac destdir="build/classes" excludes="**/*.old" debug="true">
+            <classpath refid="project.class.path" />
+            <src>
+                <pathelement location="src/main/java" />
+            </src>
+        </javac>
+
+        <!--
+        <copy todir="build/classes">
+           <fileset dir="src" includes="**/*.properties" />
+        </copy>
+        -->
+        <copy todir="build/classes">
+           <fileset dir="src/main/java" includes="**/*.sql" />
+        </copy>
+    </target>
+
+    <!-- Compile JUnit tests-->
+    <target name="compile-tests" depends="compile">
+        <mkdir dir="build/test-classes" />
+
+        <javac destdir="build/test-classes" excludes="**/*.old" debug="true">
+            <!--
+           <classpath>
+              <pathelement refid="project.class.path"/>
+              <pathelement loction="build/classes"/>
+              <filelist refid="junit.class.path"/>
+           </classpath>
+
+           <classpath refid="project.class.path"/>
+           <classpath path="build/classes"/>
+                      </classpath>
+            -->
+            <classpath refid="junit.class.path" />
+
+            <!-- classpath>
+               <classpathelement refid="project.class.path"/>
+           </classpath -->
+            <src>
+                <pathelement location="src/test" />
+            </src>
+        </javac>
+
+        <copy todir="build/test-classes">
+            <fileset dir="test" includes="**/*.properties,**/*.png" />
+        </copy>
+
+        <jar destfile="build/${ant.project.name}-tests-${version}.jar">
+            <fileset dir="build/test-classes" includes="**/**" />
+        </jar>
+    </target>
+
+    <!-- Assemble creates the deployable artifacts, like jars, wars, zips -->
+    <target name="assemble" depends="build.version.info,compile">
+        <copy todir="build/jars">
+            <fileset dir="ivy-lib/runtime" includes="**" />
+        </copy>
+        <!-- docs -->
+        <copy todir="build/docs">
+            <fileset dir="docs" includes="manual/**" />
+        </copy>
+
+        <!--
+        <echo message="Setting version to ${version}"/>
+        <replace dir="build/docs/manual" token="$${version}" value="${version}"/>
+        <echo message="copying release.txt"/>
+        <copy todir="build/docs/manual" file="release.txt"/>
+        -->
+
+        <copy todir="build/bin">
+            <fileset dir="bin" includes="**" />
+        </copy>
+        <chmod perm="a+x">
+            <fileset dir="build/bin" includes="**" />
+        </chmod>
+
+        <copy todir="build" file="release.txt" />
+
+        <jar destfile="build/${ant.project.name}-${version}.jar">
+            <fileset dir="build/classes" includes="**/**" excludes="org/slf4j/impl/**" />
+            <manifest>
+                <!-- Who is building this jar? -->
+                <attribute name="Built-By" value="${user.name}" />
+                <!-- Information about the program itself -->
+                <attribute name="Version" value="${version}" />
+                <!-- attribute name="SVN-Revision" value="xx"/ -->
+                <!-- attribute name="Main-Class" value="net.jmatrix.eproperties.cli.EPropertiesCLI"/ -->
+            </manifest>
+        </jar>
+
+        <!-- Make a version with commons-logging bundled in, and a proper
+             manifest. -->
+        <mkdir dir="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/jackson-databind.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/jackson-annotations.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/jackson-core.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/jline.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/ojdbc7_g.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/sqljdbc-4.0.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/mysql-connector-java.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/jtds.jar" dest="build/dep-classes" />
+
+        <unjar src="ivy-lib/runtime/slf4j-api.jar" dest="build/dep-classes" />
+
+        <jar destfile="build/${ant.project.name}_deps-${version}.jar">
+            <fileset dir="build/dep-classes" includes="**/**" excludes="META-INF/**" />
+            <fileset dir="build/classes" includes="**/**" />
+            <manifest>
+                <!-- Who is building this jar? -->
+                <attribute name="Built-By" value="${user.name}" />
+                <!-- Information about the program itself -->
+                <attribute name="Version" value="${version}" />
+                <attribute name="SVN-Revision" value="xx" />
+                <attribute name="Main-Class" value="net.jmatrix.db.jsql.JSQL" />
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="build.version.info">
+        <tstamp>
+            <format property="build.time" pattern="dd.MMM.yyyy HH:mm:ss"/>
+        </tstamp>
+        
+        <echo file="build/classes/build.properties" append="false">
+build.time=${build.time}
+version=${version}
+</echo>
+    </target>
+
+    <target name="assemble.ivy" depends="assemble">
+        <mkdir dir="build/ivy/${version}" />
+
+        <copy todir="build/ivy/${version}">
+            <fileset dir="resources/ivy.template" includes="**" />
+        </copy>
+
+        <replace file="build/ivy/${version}/ivy-version.xml" token="$${version}" value="${version}" />
+        <move file="build/ivy/${version}/ivy-version.xml" tofile="build/ivy/${version}/ivy-${version}.xml" />
+        <copy file="build/jproperties-${version}.jar" todir="build/ivy/${version}/jars" />
+    </target>
+
+    <target name="test" depends="compile-tests">
+        <mkdir dir="build/junit.report" />
+
+        <junit showoutput="yes" printsummary="yes">
+            <classpath>
+                <fileset dir="junit">
+                    <include name="*.jar" />
+                </fileset>
+                <!-- need runtime stuff for oracle driver -->
+                <fileset dir="build/jars">
+                    <include name="*.jar" />
+                </fileset>
+
+                <pathelement location="build/${ant.project.name}-${version}.jar" />
+                <pathelement location="build/${ant.project.name}-tests-${version}.jar" />
+            </classpath>
+
+
+            <formatter type="plain" />
+            <formatter type="xml" />
+
+            <batchtest todir="build/junit.report">
+                <fileset dir="test">
+                    <include name="**/*Test.java" />
+                    <include name="**/Test*.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- Creates distributable artifacts. -->
+    <target name="dist" depends="clean,assemble">
+        <property name="build-id" value="${ant.project.name}-${version}" />
+        <property name="dist-tmp" value="dist-tmp/${build-id}" />
+        <mkdir dir="${dist-tmp}" />
+
+        <!-- copy files to dist-tmp -->
+        <copy todir="dist-tmp/${build-id}/">
+            <fileset dir="build" includes="**/**" excludes="" />
+        </copy>
+
+        <mkdir dir="dist" />
+        <!-- Create tar.gz -->
+        <tar destfile="dist/${build-id}.tar.gz" longfile="gnu" compression="gzip">
+            <tarfileset dir="dist-tmp/" filemode="755" includes="${build-id}/bin/**" excludes="${build-id}/bin/**/*.bat" />
+
+            <tarfileset dir="dist-tmp/" includes="${build-id}/**" excludes="${build-id}/bin/**" />
+        </tar>
+        <!-- Create .xip -->
+        <zip destfile="dist/${build-id}.zip">
+            <fileset dir="dist-tmp" includes="${build-id}/**" />
+        </zip>
+        <!-- copy the jar, with dependencies, to the dist dir -->
+        <copy file="build/${ant.project.name}_deps-${version}.jar" todir="dist" />
+        <copy file="build/${ant.project.name}-${version}.jar" todir="dist" />
+    </target>
+
+    <!--  Builds javadoc. -->
+    <target name="javadoc" depends="init">
+        <mkdir dir="build/docs/javadoc" />
+        <!-- This is the page title, in head->title -->
+        <property name="TITLE" value="JProperties ${version}  generated ${TODAY}" />
+        <!-- this is the title on the page, with h1 or somethign -->
+        <property name="DOCTITLE" value="JProperties ${version} &lt;br/&gt; Generated ${TODAY}" />
+
+        <javadoc destdir="build/docs/javadoc" maxmemory="128m" author="true" windowtitle="${TITLE}" doctitle="${DOCTITLE}" additionalparam="-linksource">
+            <fileset dir="." includes="src/**/*.java,build/gen/**/*.java" excludes="**/*.properties,**/*.jj" />
+            <classpath refid="project.class.path" />
+
+            <!-- link to the sun javadoc -->
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+        </javadoc>
+    </target>
+</project>

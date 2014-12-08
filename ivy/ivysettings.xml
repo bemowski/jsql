@@ -1,0 +1,59 @@
+<ivysettings>
+   <settings defaultCacheDir="${ivy.cache.dir}"
+      defaultResolver="jmatrix" defaultConflictManager="latest-revision" />
+   <!-- in order to get all revisions without any eviction -->
+   
+     <!-- maven2 search: http://mvnrepository.com -->
+   <property name="maven2.root" value="https://repo1.maven.org/maven2"/>
+   <!--  property name="maven2.root" value="http://mirrors.ibiblio.org/pub/mirrors/maven2/" -->
+  <property name="pattern"
+   value="[organisation]/[module]/[revision]/[artifact]-[revision]"/>
+
+   <resolvers>
+      <ibiblio name="maven2" root="${maven2.root}" m2compatible="true"/>
+
+    
+      <filesystem name="user-local">
+         <ivy pattern="${local.root}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+         <artifact pattern="${local.root}/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />
+         <artifact pattern="${local.root}/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+      </filesystem>
+      <!-- 
+      <svn name="jmatrix-shared" userName="${svn.user}"
+         userPassword="${svn.password}" repositoryRoot="${jmatrix.ivy.url}"
+         binaryDiff="false">
+         <ivy pattern="shared/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+         <artifact pattern="shared/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />
+         <artifact pattern="shared/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+      </svn>
+      
+      <svn name="jmatrix-public" userName="${svn.user}"
+         userPassword="${svn.password}" repositoryRoot="${jmatrix.ivy.url}"
+         binaryDiff="false">
+         <ivy pattern="public/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+         <artifact pattern="public/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />
+         <artifact pattern="public/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+      </svn>
+       -->
+      <sftp name="jmatrix-ssh-shared" host="jmatrix.net" user="bemo" keyFile="/home/bemo/.ssh/id_dsa">
+         <ivy pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+         <ivy pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[artifact].[ext]" />
+         <artifact pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />
+         <artifact pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+      </sftp>
+      <sftp name="jmatrix-ssh-public" host="jmatrix.net" user="bemo" keyFile="/home/bemo/.ssh/id_dsa">
+         <ivy pattern="/data/ivy-repo/public/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+         <ivy pattern="/data/ivy-repo/public/[organisation]/[module]/[revision]/[artifact].[ext]" />
+         <artifact pattern="/data/ivy-repo/public/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />
+         <artifact pattern="/data/ivy-repo/public/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+      </sftp>
+      
+      <chain name="jmatrix">
+         <resolver ref="user-local"/>
+         <resolver ref="jmatrix-ssh-shared"/>
+         <resolver ref="jmatrix-ssh-public"/>
+         <resolver ref="maven2"/>
+      </chain>
+   </resolvers>
+</ivysettings>
+

@@ -1,0 +1,5 @@
+
+
+Manually publishing to local Maven repo: 
+
+mvn install:install-file -Dfile=./jsql-1.2.1.jar -DgroupId=net.jmatrix -DartifactId=jsql -Dversion=1.2.1 -Dpackaging=jar

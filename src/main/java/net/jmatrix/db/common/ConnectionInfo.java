@@ -1,11 +1,16 @@
 package net.jmatrix.db.common;
 
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.sql.DataSource;
 
 import net.jmatrix.db.drivers.DriverMap;
 import sun.misc.BASE64Decoder;
@@ -20,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * 
  */
 public class ConnectionInfo 
-   implements Comparable<ConnectionInfo>{
+   implements Comparable<ConnectionInfo>, DataSource {
    String url;
    String driverClass;
    String username;
@@ -344,5 +349,59 @@ public class ConnectionInfo
 
    public void setProperties(Map<String, String> properties) {
       this.properties = properties;
+   }
+
+   
+   ///////////////////////////////////////////////////////////////////////
+   // Implementing DataSource
+   @JsonIgnore
+   @Override
+   public PrintWriter getLogWriter() throws SQLException {
+      return null;
+   }
+
+   @JsonIgnore
+   @Override
+   public void setLogWriter(PrintWriter out) throws SQLException {  }
+
+   @JsonIgnore
+   @Override
+   public void setLoginTimeout(int seconds) throws SQLException {  }
+
+   @JsonIgnore
+   @Override
+   public int getLoginTimeout() throws SQLException {
+      return 0;
+   }
+
+   @JsonIgnore
+   @Override
+   public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+      throw new SQLFeatureNotSupportedException();
+   }
+
+   @JsonIgnore
+   @Override
+   public <T> T unwrap(Class<T> iface) throws SQLException {
+      return null;
+   }
+
+   @JsonIgnore
+   @Override
+   public boolean isWrapperFor(Class<?> iface) throws SQLException {
+      return false;
+   }
+
+   @JsonIgnore
+   @Override
+   public Connection getConnection() throws SQLException {
+      return connect();
+   }
+
+   @JsonIgnore
+   @Override
+   public Connection getConnection(String username, String password)
+         throws SQLException {
+      return connect();
    }
 }

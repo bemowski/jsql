@@ -47,6 +47,8 @@ public class CommandProcessor implements LineModeProcessor {
                   "show db", "show tables", "show views", "show connection",
                   "show procedures",
                   
+                  "sql",
+                  
                   "select", "insert", "update", "delete", "create", "drop", 
                   "dbm", "clear",
                   "help", "?"});
@@ -126,7 +128,11 @@ public class CommandProcessor implements LineModeProcessor {
             case "connect":
                return new ConnectProcessor(jsql, line);
             case "reconnect":
-               return new ReconnectProcessor(jsql);
+               if (jsql.getRecentConnections() != null &&
+                   jsql.getRecentConnections().getConnections().size() > 0) 
+                  return new ReconnectProcessor(jsql);
+               else
+                  console.warn("No recent connections available.");
                
             case "ps":
             case "sp":
@@ -179,6 +185,8 @@ public class CommandProcessor implements LineModeProcessor {
             case "":
                break;
             default: 
+               // Finally, check if we have a single line command processor
+               // matching this command.
                Command c=getCommand(command);
                
                if (c != null) {

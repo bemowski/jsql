@@ -1,0 +1,8 @@
+build
+target
+/eclipse_classes
+dist
+dist-tmp
+ivy-lib
+.ant-targets-build.xml
+*~

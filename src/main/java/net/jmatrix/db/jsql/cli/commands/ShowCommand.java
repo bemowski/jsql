@@ -159,18 +159,6 @@ public class ShowCommand extends AbstractCommand {
          // catalog, schema, table name pattern, types
          rs=dbmd.getTables(null, schema, namePattern, new String[]{type});
          
-         // jsql.getConnectionInfo().get
-         
-//         rs=dbmd.getTables(null, "", 
-//               null, new String[]{"TABLE"});
-         
-         
-//         console.debug("Got results, building list");
-//         while(rs.next()) {
-//            tables.add(rs.getString("table_name"));
-//         }
-//         console.info("Found "+tables.size()+" tables.");
-         
          PrettyFormatter pf=new PrettyFormatter(jsql.getConnectionInfo(), jsql.getConsole());
          StringWriter sw=new StringWriter();
          int rows=pf.format(rs, sw, 500, null, null, 

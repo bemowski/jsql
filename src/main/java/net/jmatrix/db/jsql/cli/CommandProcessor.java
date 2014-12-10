@@ -52,7 +52,8 @@ public class CommandProcessor implements LineModeProcessor {
                   "select", "insert", "update", "delete", "create", "drop", 
                   "dbm", "clear",
                   "help", "?"});
-      Completer cc=new StringsCompleter(commands);
+      StringsCompleter cc=new StringsCompleter(commands);
+      
       //completers.add(cc);
       
       CustomCommandCompleter customCompleter=new CustomCommandCompleter(cc);
@@ -250,7 +251,6 @@ public class CommandProcessor implements LineModeProcessor {
          }
          return stringCompleter.complete(buffer, pos, candidates);
       }
-      
    }
 }
 

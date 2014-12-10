@@ -129,7 +129,7 @@
                 <!-- Information about the program itself -->
                 <attribute name="Version" value="${version}" />
                 <!-- attribute name="SVN-Revision" value="xx"/ -->
-                <!-- attribute name="Main-Class" value="net.jmatrix.eproperties.cli.EPropertiesCLI"/ -->
+                <attribute name="Main-Class" value="net.jmatrix.db.jsql.JSQL" />
             </manifest>
         </jar>
 

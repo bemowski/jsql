@@ -116,7 +116,7 @@ public class ShowCommand extends AbstractCommand {
       console.println(info.toString());
    }
    
-   void showTables(Connection con, String split[], String type) throws SQLException {
+   void showTables(Connection con, String split[], String type) throws SQLException, IOException {
       DatabaseMetaData dbmd=con.getMetaData();
       
       ResultSet rs=null;
@@ -163,11 +163,23 @@ public class ShowCommand extends AbstractCommand {
          
 //         rs=dbmd.getTables(null, "", 
 //               null, new String[]{"TABLE"});
-         console.debug("Got results, building list");
-         while(rs.next()) {
-            tables.add(rs.getString("table_name"));
-         }
-         console.info("Found "+tables.size()+" tables.");
+         
+         
+//         console.debug("Got results, building list");
+//         while(rs.next()) {
+//            tables.add(rs.getString("table_name"));
+//         }
+//         console.info("Found "+tables.size()+" tables.");
+         
+         PrettyFormatter pf=new PrettyFormatter(jsql.getConnectionInfo(), jsql.getConsole());
+         StringWriter sw=new StringWriter();
+         int rows=pf.format(rs, sw, 500, null, null, 
+               new String[] {"TABLE_NAME", "TABLE_TYPE", "TABLE_SCHEM", "TABLE_CAT"});
+         
+         if (rows >0 ) 
+            console.println(sw.toString());
+         else 
+            console.print("No tables found.");
       } finally {
          DBUtils.close(rs);
       }
@@ -235,7 +247,6 @@ SPECIFIC_NAME String => The name which uniquely identifies this procedure within
          DBUtils.close(rs);
       }
    }
-   
    
    void showConnection(Connection con) throws SQLException {
       

@@ -93,9 +93,11 @@ public class DescribeCommand extends AbstractCommand {
       
       Connection con=jsql.getConnection();
       switch (type) {
-         case TABLE:
          case VIEW:
+         case TABLE:
             describeTable(con, object);
+            if (type.equals(TABLE))
+               describeTableIndexes(con, object);
             break;
          case PROCEDURE:
             describeProc(con, object);
@@ -167,6 +169,57 @@ IS_GENERATEDCOLUMN String => Indicates whether this is a generated column
                "IS_NULLABLE"});
          
          console.println(sw.toString());
+      } finally {
+         DBUtils.close(rs);
+      }
+   }
+   
+   
+/*
+TABLE_CAT String => table catalog (may be null)
+TABLE_SCHEM String => table schema (may be null)
+TABLE_NAME String => table name
+NON_UNIQUE boolean => Can index values be non-unique. false when TYPE is tableIndexStatistic
+INDEX_QUALIFIER String => index catalog (may be null); null when TYPE is tableIndexStatistic
+INDEX_NAME String => index name; null when TYPE is tableIndexStatistic
+TYPE short => index type:
+tableIndexStatistic - this identifies table statistics that are returned in conjuction with a table's index descriptions
+tableIndexClustered - this is a clustered index
+tableIndexHashed - this is a hashed index
+tableIndexOther - this is some other style of index
+ORDINAL_POSITION short => column sequence number within index; zero when TYPE is tableIndexStatistic
+COLUMN_NAME String => column name; null when TYPE is tableIndexStatistic
+ASC_OR_DESC String => column sort sequence, "A" => ascending, "D" => descending, may be null if sort sequence is not supported; null when TYPE is tableIndexStatistic
+CARDINALITY int => When TYPE is tableIndexStatistic, then this is the number of rows in the table; otherwise, it is the number of unique values in the index.
+PAGES int => When TYPE is tableIndexStatisic then this is the number of pages used for the table, otherwise it is the number of pages used for the current index.
+ */
+   void describeTableIndexes(Connection con, String tablename) throws SQLException, IOException {
+      DatabaseMetaData dbmd=con.getMetaData();
+      
+      ResultSet rs=null;
+      
+      
+      
+      try {
+         console.debug("Getting indexes for "+tablename);
+         
+         // catalog, schema, table name pattern, column name pattern
+         
+         ConnectionInfo ci=jsql.getConnectionInfo();
+         
+         rs=dbmd.getIndexInfo(null, null, tablename, false, false);
+         
+         PrettyFormatter pf=new PrettyFormatter(jsql.getConnectionInfo(), jsql.getConsole());
+         StringWriter sw=new StringWriter();
+         int rows=pf.format(rs, sw, 500, null, null, 
+               new String[] {"COLUMN_NAME", "INDEX_NAME", "CARDINALITY", "NON_UNIQUE"});
+         
+         if (rows > 0) {
+            console.println("indexes:");
+            console.println(sw.toString());
+         } else {
+            console.println("No indexes found on "+tablename);
+         }
       } finally {
          DBUtils.close(rs);
       }

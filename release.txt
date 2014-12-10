@@ -1,7 +1,8 @@
 JSQL Release Highlights
 
 1.2.5 - ConnectionInfo isa DataSource
-      - 
+      - Describe indexes when describing a table.
+ 
 1.2.4 - github
 
 1.2.3 07.dec.2014

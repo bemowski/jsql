@@ -2,6 +2,7 @@ package net.jmatrix.db.common.console;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import jline.Terminal;
@@ -45,9 +46,14 @@ public class JLineConsole extends AbstractConsole {
    @Override
    public void setCompleters(Collection<Completer> completers) {
       Collection<Completer> old=reader.getCompleters();
-      if (old != null) 
-         for (Completer c:old) 
+
+      if (old != null) {
+         Collection<Completer> copy=new ArrayList<>();  // defensive copy
+         copy.addAll(old);
+         
+         for (Completer c:copy) 
             reader.removeCompleter(c);
+      }
       
       if (completers != null) {
          //debug("Adding "+completers.size()+" completers.");

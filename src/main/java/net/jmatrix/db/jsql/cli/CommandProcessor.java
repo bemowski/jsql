@@ -1,6 +1,7 @@
 package net.jmatrix.db.jsql.cli;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,18 +12,22 @@ import java.util.Map;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
+import net.jmatrix.db.common.ConnectionInfo;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
 import net.jmatrix.db.jsql.JSQL;
 import net.jmatrix.db.jsql.SQLRunner;
 import net.jmatrix.db.jsql.cli.commands.Command;
 import net.jmatrix.db.jsql.cli.commands.DescribeCommand;
+import net.jmatrix.db.jsql.cli.commands.LogLevelCommand;
 import net.jmatrix.db.jsql.cli.commands.SetCommand;
 import net.jmatrix.db.jsql.cli.commands.ShowCommand;
+import net.jmatrix.db.jsql.cli.jline.completer.TableNameCompleter;
 
 public class CommandProcessor implements LineModeProcessor {
    static final TextConsole console=SysConsole.getConsole();
-
+   
+   TableNameCompleter tableNameCompleter=null;
    
    JSQL jsql=null;
    
@@ -37,6 +42,7 @@ public class CommandProcessor implements LineModeProcessor {
       commands.add(new ShowCommand(jsql));
       commands.add(new DescribeCommand(jsql));
       commands.add(new SetCommand(jsql));
+      commands.add(new LogLevelCommand(jsql));
       
       
       List<String> commands=Arrays.asList(
@@ -49,16 +55,23 @@ public class CommandProcessor implements LineModeProcessor {
                   
                   "sql",
                   
+                  // Fixme: these should move to LogLevelCommand
+                  "debug", "trace",
+                  
                   "select", "insert", "update", "delete", "create", "drop", 
                   "dbm", "clear",
                   "help", "?"});
       StringsCompleter cc=new StringsCompleter(commands);
       
-      //completers.add(cc);
-      
       CustomCommandCompleter customCompleter=new CustomCommandCompleter(cc);
       
       completers.add(customCompleter);
+      
+      tableNameCompleter=new TableNameCompleter();
+      if (jsql.isConnected()) {
+         tableNameCompleter.connect(jsql.getConnectionInfo());
+      }
+      completers.add(tableNameCompleter);
    }
    
    @Override
@@ -217,6 +230,14 @@ public class CommandProcessor implements LineModeProcessor {
       }
       
       return null;
+   }
+   
+   public void connect(ConnectionInfo coninfo) {
+      tableNameCompleter.connect(coninfo);
+   }
+   
+   public void disconnect() {
+      tableNameCompleter.disconnect();
    }
    
    

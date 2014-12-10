@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 
 import net.jmatrix.db.common.ArgParser;
@@ -35,6 +36,9 @@ public class JSQL {
    //TextConsole console=null;
    
    RecentConnections recentConnections=null;
+   
+   SystemInProcessor sysInProc=null;
+   CommandProcessor commandProcessor=null;
    
    // syntax similar to sqlplus
    // jsql user/pass@<jdbcurl>
@@ -98,14 +102,6 @@ public class JSQL {
       
       // this is interactive.
       jsql.start();
-      
-//      Thread.sleep (10);
-//      Logger l=LoggerFactory.getLogger("");
-//      
-//      l.debug("debug");
-//      l.info("log");
-//      l.warn("warn");
-//      l.error("error");
    }
    
    private static String splash() {
@@ -138,7 +134,8 @@ public class JSQL {
    }
    
    public void start() {
-      Thread t=new Thread(new SystemInProcessor());
+      sysInProc=new SystemInProcessor();
+      Thread t=new Thread(sysInProc);
       t.setName("sys.in.proc");
       t.start();
    }
@@ -147,7 +144,6 @@ public class JSQL {
     * This is the run loop for the LineModeProcessors.  
     */
    class SystemInProcessor implements Runnable {
-      CommandProcessor commandProcessor=null;
       LineModeProcessor currentProcessor=null;
       
       public SystemInProcessor() {
@@ -215,8 +211,11 @@ public class JSQL {
       }
       
       connectBanner();
+      
+      if (commandProcessor != null)
+         commandProcessor.connect(conInfo);
    }
-   
+
    public void disconnect() {
       try {
          conInfo.close();

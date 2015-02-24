@@ -114,6 +114,8 @@ public class CommandProcessor implements LineModeProcessor {
       
       String command=split[0];
       
+      String lccommand=command.toLowerCase();
+      
       long start=System.currentTimeMillis();
       try {
          if (line.startsWith("@")) {
@@ -127,7 +129,7 @@ public class CommandProcessor implements LineModeProcessor {
          }
          
          
-         switch (command) {
+         switch (lccommand) {
             case "sql":
                return new SQLProcessor(jsql);
 

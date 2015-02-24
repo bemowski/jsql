@@ -1,4 +1,50 @@
 
+Failures: 
+DBM Disk Path: /home/bemo/asurion/gitroot/server/db/sql/sal/1.X
+----------------------------------------------------------
+|version|applyCount|rollbackCount|dbDate         |action |
+----------------------------------------------------------
+|0      |          |             |26Sep2014 11:13|INITIAL|
+|1      |57        |11           |26Sep2014 11:14|APPLY  |
+|1.24.1 |1         |1            |26Sep2014 11:14|APPLY  |
+|1.24.2 |110       |1            |26Sep2014 11:14|APPLY  |
+|1.25.1 |13        |2            |               |       |
+|1.26.1 |2         |1            |               |       |
+|1.27.1 |3         |1            |               |       |
+|1.27.2 |4         |2            |               |       |
+|1.27.3 |          |             |11Dec2014 02:37|MANUAL |
+|1.28.1 |          |             |11Dec2014 02:37|APPLY  |
+|1.29.1 |          |             |11Dec2014 02:37|APPLY  |
+|1.29.2 |          |             |11Dec2014 02:38|APPLY  |
+----------------------------------------------------------
+
+
+Current DB Version: 1.29.2
+Error in DBM Processor
+java.lang.NullPointerException
+   at net.jmatrix.db.schema.DBM.recommendUpdateActions(DBM.java:466)
+   at net.jmatrix.db.jsql.cli.DBMProcessor.showRecommendationsShort(DBMProcessor.java:292)
+   at net.jmatrix.db.jsql.cli.DBMProcessor.processLine(DBMProcessor.java:140)
+   at net.jmatrix.db.jsql.JSQL$SystemInProcessor.run(JSQL.java:163)
+   at java.lang.Thread.run(Thread.java:745)
+
+JSQL.DBM>rollback 1.29.2
+Executing 1 actions.
+>>>>>>>>>>>>> Disk Rollback null
+Error in DBM Processor
+java.lang.NullPointerException
+   at net.jmatrix.db.schema.action.RollbackDiskAction.execute(RollbackDiskAction.java:98)
+   at net.jmatrix.db.schema.DBM.executeActionsWithLock(DBM.java:513)
+   at net.jmatrix.db.schema.DBM.executeActionWithLock(DBM.java:491)
+   at net.jmatrix.db.schema.DBM.rollback(DBM.java:320)
+   at net.jmatrix.db.jsql.cli.DBMProcessor.processLine(DBMProcessor.java:207)
+   at net.jmatrix.db.jsql.JSQL$SystemInProcessor.run(JSQL.java:163)
+   at java.lang.Thread.run(Thread.java:745)
+
+
+
+
+
 
 DONE 0) implement rollback from DB.
 

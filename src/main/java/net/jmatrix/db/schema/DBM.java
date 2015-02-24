@@ -316,8 +316,53 @@ public class DBM {
    /** */
    public void rollback(String version) throws SQLException, IOException, InterruptedException {
       DiskVersion diskVer=findDiskVersion(version);
-      Action action=new RollbackDiskAction(this, diskVer);
-      executeActionWithLock(action);
+      DBVersion dbVer=findLatestDBApply(version);
+      
+      // Choose - db or disk rollback?
+      
+      if (diskVer == null && dbVer == null) {
+         throw new DBMException("Cannot rollback version '"+version+
+               "' - cannot find disk or db version.");
+      } else {
+         Action action=null;
+         if (dbVer != null) {
+            log.info("Rolling back '"+version+"' using database version "+
+                     "APPLYed on "+dbVer.getApplyDate());
+            action=new RollbackDBAction(this, dbVer);
+         } else if (diskVer != null) {
+            log.info("DB Version not available for rollback, rolling back using "+
+                     "diskVersion "+diskVer);
+            action=new RollbackDiskAction(this, diskVer);
+         } else {} // not possible.
+         
+         executeActionWithLock(action);
+      }
+   }
+   
+   /** Executes rollback using rollback SQL found on the current
+    * version on disk.  */
+   public void rollbackDisk(String version) throws SQLException, IOException, InterruptedException {
+      DiskVersion diskVer=findDiskVersion(version);
+      if (diskVer == null) {
+         throw new DBMException("Cannot rollback disk version '"+version+
+               "' - cannot find version on disk.");
+      } else {
+         Action action=new RollbackDiskAction(this, diskVer);
+         executeActionWithLock(action);
+      }
+   }
+   
+   /** Executes rollback using rollback SQL found on the current
+    * version on disk.  */
+   public void rollbackDb(String version) throws SQLException, IOException, InterruptedException {
+      DBVersion dbVer=findLatestDBApply(version);
+      if (dbVer == null) {
+         throw new DBMException("Cannot rollback db version '"+version+
+               "' - cannot find APPLY in db.");
+      } else {
+         Action action=new RollbackDBAction(this, dbVer);
+         executeActionWithLock(action);
+      }
    }
    
    /** */
@@ -448,7 +493,6 @@ public class DBM {
                actions.add(new ApplyAction(this, dv));
             }
          }
-         
       } else { //diskVersionNumb.compareTo(dbVersionNum) < 0
          // db version larger than disk version.
          // must recommend manual rollback
@@ -459,27 +503,34 @@ public class DBM {
             DBVersion dv=dbVersions.get(i);
             
             if (dv.getVersion().compareTo(diskVersionNum) > 0) {
-               DBVersion ldv=findLatestDBApply(dv.getVersion().toString());
+               DBVersion latestApply=findLatestDBApply(dv.getVersion().toString());
+               
+               // Latest Apply can be null - if we are rolling back to 
+               // a manual set point.
+               
                
                log.debug("Version "+dv.getVersion());
                log.debug("   v:"+dv.getApplyDate()+"  / "+dv.getId());
-               log.debug("   l:"+ldv.getApplyDate()+"  / "+ldv.getId()+" "+ldv.getVersion());
+               
+               if (latestApply != null) {
+                  log.debug("   l:"+latestApply.getApplyDate()+"  / "+latestApply.getId()+" "+latestApply.getVersion());
+               } else
+                  log.debug("   l: cannot find APPLY in history, likely a manual or initial version.");
                
                Action action=null; 
                
-               if (ldv.getRollback()) {
-                  action=new RollbackDBAction(this, ldv);
+               if (latestApply != null && latestApply.getRollback()) {
+                  action=new RollbackDBAction(this, latestApply);
                } else {
-                  action=new ManualAction(this, "RollbackManual("+ldv.getVersion()+")");
+                  action=new ManualAction(this, "RollbackManual("+latestApply.getVersion()+")");
                }
                log.debug("   "+action);
                
-               if (!rbv.contains(ldv.getVersion())) {
+               if (!rbv.contains(dv.getVersion())) {
                   actions.add(action);
-                  rbv.add(ldv.getVersion());
+                  rbv.add(dv.getVersion());
                }
             }
-            
          }
       }
       return actions;

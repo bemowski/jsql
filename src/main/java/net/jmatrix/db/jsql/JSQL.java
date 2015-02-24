@@ -59,6 +59,7 @@ public class JSQL {
          console.error("Error loading recent connections", ex);
       }
    }
+
    
    public static void main(String args[]) throws Exception {
       
@@ -274,6 +275,14 @@ public class JSQL {
    
    public void setFormatter(RSFormatter f) {
       formatter=f;
+      
+      if (conInfo != null)
+         formatter.setConnectionInfo(conInfo);
+      
+      if (console != null) {
+         formatter.set(RSFormatter.CONSOLE_WIDTH, console.getColumns());
+         formatter.set(RSFormatter.CONSOLE_LINES, console.getRows());
+      }
    }
    
    public RecentConnections getRecentConnections() {

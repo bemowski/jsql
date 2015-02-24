@@ -1,5 +1,9 @@
 JSQL Release Highlights
 
+1.2.6 - Fix NPEs when rolling back to manual version
+      - Rollback now chooses DB or Disk version, preferring DB if available
+      - Add filename completer to dbm path prompt
+
 1.2.5 - ConnectionInfo isa DataSource
       - Describe indexes when describing a table.
  

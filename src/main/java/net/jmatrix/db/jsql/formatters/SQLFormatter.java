@@ -26,6 +26,8 @@ public class SQLFormatter extends AbstractFormatter {
       super(ci);
    }
    
+   public SQLFormatter() {}
+   
    @Override
    public int format(ResultSet rs, Writer writer, final int rows, String sql, 
          String table, String[] columnns)

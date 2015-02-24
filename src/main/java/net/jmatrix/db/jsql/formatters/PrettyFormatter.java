@@ -202,7 +202,20 @@ public class PrettyFormatter extends AbstractFormatter {
          
          for (int i=1; i<=data.cols; i++) {
             //String s=rs.getString(i);
-            String s=rs.getString(dc.get(i-1).name);
+            
+            // This does not work for some SQL server stored procs - returning 
+            // a single value in a single column WITH NO NAME.  the getString(i)
+            // above was previously commented in favor of this. I think possibly 
+            // so we could re-order columns in the result set.
+            
+            String s=null;
+            
+            if (dc.get(i-1).name != null && !dc.get(i-1).name.equals("")) {
+               s=rs.getString(dc.get(i-1).name);
+            } else {
+               s=rs.getString(i);
+            }
+            
             
             if (s == null)
                s="NULL";
@@ -228,7 +241,7 @@ public class PrettyFormatter extends AbstractFormatter {
       int count=0;
       
       public String toString() {
-         return "Col("+name+", max="+maxwidth+", avg="+avewidth+", rowcount="+count+")";
+         return "Col('"+name+"', max="+maxwidth+", avg="+avewidth+", rowcount="+count+")";
       }
       
       void add(int x) {
@@ -262,6 +275,8 @@ public class PrettyFormatter extends AbstractFormatter {
             for (int i=1; i<=cols; i++) {
                addColumn(rsmd.getColumnName(i));
             }
+            
+            log.debug("Columns: "+this.columns);
          }
       }
       

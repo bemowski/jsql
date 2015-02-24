@@ -13,6 +13,10 @@ public class PlainFormatter extends AbstractFormatter {
    public PlainFormatter(ConnectionInfo ci) {
       super(ci);
    }
+   
+   public PlainFormatter() {
+      
+   }
 
    @Override
    public int format(ResultSet rs, Writer writer, int rows, String sql, String table,

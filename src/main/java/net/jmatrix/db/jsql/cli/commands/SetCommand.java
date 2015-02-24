@@ -7,8 +7,10 @@ import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
 import net.jmatrix.db.common.console.TextConsole.Level;
 import net.jmatrix.db.jsql.JSQL;
+import net.jmatrix.db.jsql.formatters.PlainFormatter;
 import net.jmatrix.db.jsql.formatters.PrettyFormatter;
 import net.jmatrix.db.jsql.formatters.RSFormatter;
+import net.jmatrix.db.jsql.formatters.SQLFormatter;
 
 public class SetCommand extends AbstractCommand {
    static final TextConsole console=SysConsole.getConsole();
@@ -123,6 +125,19 @@ public class SetCommand extends AbstractCommand {
             } else {
                console.warn("Malformed set command.");
             }
+         }break;
+         
+         case "formatter": {
+            if (key.equals("plain")) {
+               jsql.setFormatter(new PlainFormatter());
+            } else if (key.equals("pretty")) {
+               jsql.setFormatter(new PrettyFormatter(jsql.getConsole()));
+            } else if (key.equals("sql")) {
+               jsql.setFormatter(new SQLFormatter());
+            } else {
+               console.warn("Don't know formatter '"+key+"' - known values: [plain, pretty, sql]");
+            }
+            console.info("Current Formatter: "+jsql.getFormatter());
          }break;
          
          default: 

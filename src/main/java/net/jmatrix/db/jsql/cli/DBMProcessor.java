@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 import jline.console.completer.Completer;
+import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
-import jline.internal.Log;
 import net.jmatrix.db.common.ConnectionInfo;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
@@ -73,7 +73,12 @@ public class DBMProcessor implements LineModeProcessor {
 
    @Override
    public Collection<Completer> getCompleters() {
-      return completers;
+      if (dbm == null) {
+         // to choose dbm disk path
+         FileNameCompleter fnc=new FileNameCompleter();
+         return Arrays.asList(new Completer[] {fnc});
+      } else 
+         return completers;
    }
    
    @Override

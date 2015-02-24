@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import net.jmatrix.db.common.ConnectionInfo;
+import net.jmatrix.db.common.DebugUtils;
 
 public abstract class AbstractFormatter implements RSFormatter {
    protected ConnectionInfo conInfo=null;
@@ -22,6 +24,11 @@ public abstract class AbstractFormatter implements RSFormatter {
    }
    
    protected AbstractFormatter() {}
+   
+   @Override
+   public String toString() {
+      return DebugUtils.shortClassname(this)+": "+parameters;
+   }
    
    @Override
    public String format(ResultSet rs)  throws SQLException, IOException {

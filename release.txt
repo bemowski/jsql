@@ -1,5 +1,8 @@
 JSQL Release Highlights
 
+1.2.8 25.Feb.2015
+      - Command line schema management via DBM.
+
 1.2.7
       - Command line schema management
       - Bug: commands are now case insensitive.

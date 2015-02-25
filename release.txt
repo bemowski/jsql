@@ -1,6 +1,11 @@
 JSQL Release Highlights
 
-1.2.6 - Fix NPEs when rolling back to manual version
+1.2.7
+      - Command line schema management
+      - Bug: commands are now case insensitive.
+
+1.2.6 23 Feb 2015
+      - Fix NPEs when rolling back to manual version
       - Rollback now chooses DB or Disk version, preferring DB if available
       - Add filename completer to dbm path prompt
 

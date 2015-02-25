@@ -578,9 +578,17 @@ public class DBM {
       reloadDBVersions();
    }
    
+   /**
+    * Executes all recommended updates - which could include rollbacks.
+    */
    public void updateAll() throws SQLException, IOException, InterruptedException {
       List<Action> actions=recommendUpdateActions();
-      executeActionsWithLock(actions);
+      if (actions.size() > 0) {
+         log.info("Executing "+actions.size()+" actions.");
+         executeActionsWithLock(actions);
+      } else {
+         log.info("DBM Schema up to date.");
+      }
    }
    
    public Version getCurrentDBVersion() throws SQLException {

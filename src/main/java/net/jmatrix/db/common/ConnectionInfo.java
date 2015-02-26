@@ -205,9 +205,11 @@ public class ConnectionInfo
    }
    
    public Connection initDefaultConnection() throws SQLException {
-      Connection con=connect();
-      setDefaultConnection(con);
-      return con;
+      if (connection == null) {
+         Connection con=connect();
+         setDefaultConnection(con);
+      }
+      return connection;
    }
    
    public Connection connect() throws SQLException {

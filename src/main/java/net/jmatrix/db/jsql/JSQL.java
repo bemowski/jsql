@@ -72,7 +72,8 @@ public class JSQL {
          "\njsql [-h] [-r | -c <url>] [-dbm.path <path> [-dbm.action <action>]]\n"+
          "where\n"+
          "   -h: displays this help message\n\n"+
-         "   -v: verbose output mode.\n\n"+
+         "   -v: verbose output mode.\n"+
+         "   -vv: really verbose output. \n\n"+
          "   -r: reconnect to the most recently connected database.  \n"+
          "       useful in interactive mode.\n\n"+
          "   -c <url> connects to the specified database\n"+
@@ -103,11 +104,13 @@ public class JSQL {
       
       TextConsole console=SysConsole.getConsole();
       
-      if (ap.getBooleanArg("-v")) {
+      
+      if (ap.getBooleanArg("-vv")) 
+         console.setLevel(Level.ALL);
+      else if (ap.getBooleanArg("-v"))
          console.setLevel(Level.DEBUG);
-      } else {
+      else 
          console.setLevel(Level.LOG);
-      }
       
       System.out.println(console);
       
@@ -148,6 +151,17 @@ public class JSQL {
          ConnectionInfo ci=null;
          try {
             ci=new ConnectionInfo(url);
+            
+            // we do this just so it gets stored in recent connections for 
+            // the user in question.
+            try {
+               RecentConnections rc=RecentConnections.load(JSQL);
+               if (rc != null)
+                  rc.update(ci);
+               rc.save(JSQL);
+            } catch (Exception ex) {
+               log.warn("Cannot update recent connections.");
+            }
             
             log.info("DBM Connection: "+ci);
             
@@ -195,7 +209,6 @@ public class JSQL {
          // JSQL Interactive mode
          JSQL jsql=new JSQL(console);
          
-
          if (ap.getBooleanArg("-r")) {
             // reconnect to the most recently connected database.
             

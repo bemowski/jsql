@@ -44,6 +44,8 @@ public interface TextConsole {
    public void warn(String s, Throwable t);
    public void error(String s);
    public void error(String s, Throwable t);
+   public void trace(String s);
+   public void trace(String s, Throwable t);
    public void print(String s);
    public void println(String s);
 }

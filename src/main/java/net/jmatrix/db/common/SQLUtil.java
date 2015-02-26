@@ -10,15 +10,15 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.jmatrix.db.common.console.SysConsole;
-import net.jmatrix.db.common.console.TextConsole;
+import org.slf4j.Logger;
 
 /**
  * Small utilities related to SQL itself.
  */
 public class SQLUtil {
-   static TextConsole console=SysConsole.getConsole();
-   
+   //static TextConsole console=SysConsole.getConsole();
+   private static Logger log=ClassLogFactory.getLog();
+
    static Map<Integer,String> typeNameMap=new HashMap<Integer, String>();
 
    static {
@@ -36,7 +36,7 @@ public class SQLUtil {
    
    /** */
    public static String stripSQLComments(String sql) {
-      console.debug("SQL before comment removal, length is "+sql.length());
+      log.trace("SQL before comment removal, length is "+sql.length());
       
       String multiLineRegex="/\\*(.)*?\\*/";
       // This regex used to be: "/\\*(.|[\\r\\n])*?\\*/";
@@ -54,14 +54,14 @@ public class SQLUtil {
       
       sql=matcher.replaceAll("");
       
-      console.debug("SQL after multiline comment removal, length is "+sql.length());
+      log.trace("SQL after multiline comment removal, length is "+sql.length());
 
       String singleLineRegex="^(\\s)*\\-\\-.*?$";
       Pattern singleLinePattern=Pattern.compile(singleLineRegex, Pattern.MULTILINE);
       matcher=singleLinePattern.matcher(sql);
       
       sql=matcher.replaceAll("");
-      console.debug("SQL after single line comment removal, length is "+sql.length());
+      log.trace("SQL after single line comment removal, length is "+sql.length());
       
       return sql;
    }

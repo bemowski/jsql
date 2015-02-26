@@ -149,6 +149,7 @@ public class CommandProcessor implements LineModeProcessor {
                   return new ReconnectProcessor(jsql);
                else
                   console.warn("No recent connections available.");
+               break;
                
             case "ps":
             case "sp":

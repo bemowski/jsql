@@ -51,6 +51,18 @@ public abstract class AbstractConsole implements TextConsole {
    }
 
    @Override
+   public void trace(String s) {
+      trace(s, null);
+   }
+
+   @Override
+   public void trace(String s, Throwable t) {
+      if (level.getILevel() > Level.DEBUG.getILevel()) {
+         info(s, t);
+      }
+   }
+   
+   @Override
    public void debug(String s) {
       debug(s, null);
    }

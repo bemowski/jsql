@@ -17,7 +17,7 @@ public class SLF4JConsoleLoggerAdapter extends MarkerIgnoringBase {
    //////////////////////////// TRACE ////////////////////////////////
    @Override
    public boolean isTraceEnabled() {
-      return console.getLevel().getILevel() >= Level.DEBUG.getILevel();
+      return console.getLevel().getILevel() >= Level.ALL.getILevel();
    }
 
    @Override
@@ -42,7 +42,7 @@ public class SLF4JConsoleLoggerAdapter extends MarkerIgnoringBase {
 
    @Override
    public void trace(String msg, Throwable t) {
-      console.debug(msg, t);
+      console.trace(msg, t);
    }
 
    //////////////////////////// DEBUG ////////////////////////////////

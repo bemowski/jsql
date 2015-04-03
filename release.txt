@@ -1,5 +1,10 @@
 JSQL Release Highlights
 
+1.2.10
+      - Better ability to set formatters on CLI
+      - Display formatter w/ set
+      - CSVFormatter
+
 1.2.9
       - More granular log verbosity on command line.
       - Remember recent connections even if calling dbm from command line.

@@ -25,6 +25,8 @@ public abstract class AbstractFormatter implements RSFormatter {
    
    protected AbstractFormatter() {}
    
+   
+   
    @Override
    public String toString() {
       return DebugUtils.shortClassname(this)+": "+parameters;

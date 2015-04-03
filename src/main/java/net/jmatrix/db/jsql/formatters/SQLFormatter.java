@@ -9,14 +9,19 @@ import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import net.jmatrix.db.common.ClassLogFactory;
 import net.jmatrix.db.common.ConnectionInfo;
 import net.jmatrix.db.common.SQLUtil;
+
+import org.slf4j.Logger;
 
 /**
  * Formats results as INSERT statments.
  *
  * */
 public class SQLFormatter extends AbstractFormatter {
+   private static Logger log=ClassLogFactory.getLog();
+
    DateFormat DATE_FORMAT=new SimpleDateFormat("yyyy-MM-dd");
    DateFormat TIME_FORMAT=new SimpleDateFormat("HH:mm:ss");
    DateFormat TIMESTAMP_FORMAT=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -39,7 +44,15 @@ public class SQLFormatter extends AbstractFormatter {
       
       ResultSetMetaData rsmd=rs.getMetaData();
       
-      //String table=rsmd.getTableName(1);
+      
+      if (table == null) {
+         try {
+            // this returns the empty string on Oracle, but may work on other databses.
+            table=rsmd.getTableName(1);
+         } catch (Exception ex) {
+            log.warn("Can't infer table name from ResultSetMetaData", ex);
+         }
+      }
       
       int rowcount=0;
       while (rs.next()) {

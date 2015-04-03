@@ -53,7 +53,7 @@ public class SQLProcessor implements LineModeProcessor {
       if (sql.endsWith(";"))
          sql=sql.substring(0, sql.length()-1);
       
-     console.debug("SQL \n"+sql);
+      console.debug("SQL \n"+sql);
       
       Statement state=null;
       ResultSet rs=null;

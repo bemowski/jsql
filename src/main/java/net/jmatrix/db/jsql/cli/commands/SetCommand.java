@@ -1,12 +1,15 @@
 package net.jmatrix.db.jsql.cli.commands;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import net.jmatrix.db.common.ConnectionInfo;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
 import net.jmatrix.db.common.console.TextConsole.Level;
 import net.jmatrix.db.jsql.JSQL;
+import net.jmatrix.db.jsql.formatters.CSVFormatter;
 import net.jmatrix.db.jsql.formatters.PlainFormatter;
 import net.jmatrix.db.jsql.formatters.PrettyFormatter;
 import net.jmatrix.db.jsql.formatters.RSFormatter;
@@ -14,7 +17,9 @@ import net.jmatrix.db.jsql.formatters.SQLFormatter;
 
 public class SetCommand extends AbstractCommand {
    static final TextConsole console=SysConsole.getConsole();
-
+   
+   static List<String> formatters=Arrays.asList(new String[]{"plain", "sql", "pretty", "csv"});
+   
    public SetCommand(JSQL j) {
       super(j);
    }
@@ -79,7 +84,12 @@ public class SetCommand extends AbstractCommand {
       // log.
       sb.append("log\n");
       sb.append("  level "+console.getLevel().toString()+"\n");
+      sb.append("\n");
       
+      
+      // formatter
+      sb.append("formatter  (Available: "+formatters+")\n");
+      sb.append("  current: "+jsql.getFormatter()+"\n");
       
       console.info(sb.toString());
    }
@@ -134,8 +144,10 @@ public class SetCommand extends AbstractCommand {
                jsql.setFormatter(new PrettyFormatter(jsql.getConsole()));
             } else if (key.equals("sql")) {
                jsql.setFormatter(new SQLFormatter());
+            } else if (key.equals("csv")) {
+               jsql.setFormatter(new CSVFormatter());
             } else {
-               console.warn("Don't know formatter '"+key+"' - known values: [plain, pretty, sql]");
+               console.warn("Don't know formatter '"+key+"' - known values: "+formatters);
             }
             console.info("Current Formatter: "+jsql.getFormatter());
          }break;

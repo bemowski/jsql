@@ -8,11 +8,14 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import net.jmatrix.db.drivers.DriverMap;
+
+import org.slf4j.Logger;
+
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -26,6 +29,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class ConnectionInfo 
    implements Comparable<ConnectionInfo>, DataSource {
+   private static Logger log=ClassLogFactory.getLog();
+
    String url;
    String driverClass;
    String username;
@@ -231,15 +236,36 @@ public class ConnectionInfo
          //log("  Driver Version: "+driver.getMajorVersion()+"."+driver.getMinorVersion());
       }
       
+      Connection con=null;
       try {
-         Connection con=DriverManager.getConnection(url, username, getPassword());
+         if (properties == null) 
+            con=DriverManager.getConnection(url, username, getPassword());
+         else {
+            con=DriverManager.getConnection(url, props());
+         }
          
-         //setConnection(con);
          
-         return con;
       } catch (Exception ex) {
          throw new SQLException("Cannot connect: "+ex);
       }
+      return con;
+   }
+   
+   private Properties props() {
+      Properties p= new Properties();
+      
+      p.put("user", getUsername());
+      p.put("password", getPassword());
+      
+      if (properties != null) {
+         // don't log this here, doesn't turn out good.
+         //log.info("Adding properties: "+properties);
+         for (String key:properties.keySet()) {
+            p.put(key, properties.get(key));
+         }
+      }
+      
+      return p;
    }
    
    public void setProperty(String key, String value) {
@@ -378,7 +404,7 @@ public class ConnectionInfo
 
    @JsonIgnore
    @Override
-   public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+   public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
       throw new SQLFeatureNotSupportedException();
    }
 

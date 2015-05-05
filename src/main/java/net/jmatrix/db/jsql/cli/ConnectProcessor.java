@@ -1,12 +1,11 @@
 package net.jmatrix.db.jsql.cli;
 
-import java.sql.DriverManager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import jline.console.completer.Completer;
-import net.jmatrix.db.common.DebugUtils;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
 import net.jmatrix.db.drivers.DriverMap;
@@ -81,9 +80,21 @@ public class ConnectProcessor implements LineModeProcessor {
    
    void connect() {
       String user=values.get(USER);
+      
+      // check for oracle style "sys as sysdba" usernames.
+      Map<String, String> p=null;
+      String usercomponents[]=user.split("\\ ");
+      if (usercomponents.length == 3 && usercomponents[1].equals("as")) {
+         p=new HashMap<String, String>();
+         p.put("internal_logon", usercomponents[2]) ;
+         user=usercomponents[0];
+         
+         console.info("Connecting as user="+user+", proeprties: "+p);
+      }
+      
       String url=values.get(URL);
       try {
-         jsql.connect(values.get(DRIVER), url, user, values.get(PASS));
+         jsql.connect(values.get(DRIVER), url, user, values.get(PASS), p);
       } catch (Exception ex) {
          console.error("Error connecting to "+user+" at "+url, ex);
       }

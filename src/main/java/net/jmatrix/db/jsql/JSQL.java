@@ -7,6 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import net.jmatrix.db.common.ArgParser;
@@ -317,8 +318,12 @@ public class JSQL {
    }
    
    public void connect(String driver, String url, String user, String pass) throws SQLException {
-      //conInfo=DBUtils.connect(driver, url, user, pass);
+      connect(driver, url, user, pass, null);
+   }
+   
+   public void connect(String driver, String url, String user, String pass, Map<String, String> p) throws SQLException {
       ConnectionInfo ci=new ConnectionInfo(driver, url, user, pass);
+      ci.setProperties(p);
       connect(ci);
    }
    

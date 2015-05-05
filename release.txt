@@ -1,5 +1,8 @@
 JSQL Release Highlights
 
+1.2.11
+      - Support oracle logins with usernames like 'sys as sysdba'
+
 1.2.10
       - Better ability to set formatters on CLI
       - Display formatter w/ set

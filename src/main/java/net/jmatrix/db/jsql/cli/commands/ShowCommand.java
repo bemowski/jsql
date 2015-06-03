@@ -161,11 +161,13 @@ public class ShowCommand extends AbstractCommand {
          
          PrettyFormatter pf=new PrettyFormatter(jsql.getConnectionInfo(), jsql.getConsole());
          StringWriter sw=new StringWriter();
-         int rows=pf.format(rs, sw, 500, null, null, 
+         int rows=pf.format(rs, sw, 5000, null, null, 
                new String[] {"TABLE_NAME", "TABLE_TYPE", "TABLE_SCHEM", "TABLE_CAT"});
          
-         if (rows >0 ) 
+         if (rows >0 ) {
             console.println(sw.toString());
+            console.println(rows+" tables.");
+         }
          else 
             console.print("No tables found.");
       } finally {

@@ -1,5 +1,8 @@
 JSQL Release Highlights
 
+1.2.12 
+      - Max number of show tables 500->5000
+
 1.2.11
       - Support oracle logins with usernames like 'sys as sysdba'
 

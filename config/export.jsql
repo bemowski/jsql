@@ -1,0 +1,36 @@
+alter user PSSAppUser with default_schema=core
+export
+client.sql
+client
+
+export
+application.sql
+application
+
+export
+subapplication.sql
+subapplication
+
+export
+channel.sql
+channel
+
+export
+deviceidentifiertype.sql
+deviceidentifiertype
+
+export
+event.sql
+event
+
+export
+eventtype.sql
+eventtype
+
+export
+eventdetailtype.sql
+eventdetailtype
+
+alter user PSSAppUser with default_schema=dbo
+exit
+

@@ -68,17 +68,24 @@ public class ExportSQL  {
    public void export(File file, String table, String where) throws SQLException, IOException {
       FileWriter fw=new FileWriter(file);
       try {
-         export(fw, table, where);
+         String sql=query(table, where);
+         export(fw, table, sql);
+      } finally {
+         StreamUtil.close(fw);
+      }
+   }
+   
+   public void exportSql(File file, String tablename, String sql) throws SQLException, IOException {
+      FileWriter fw=new FileWriter(file);
+      try {
+         export(fw, tablename, sql);
       } finally {
          StreamUtil.close(fw);
       }
    }
    
    /** */
-   public void export(Writer writer, String table, String where) throws SQLException, IOException {
-      
-      String sql=query(table, where);
-      
+   public void export(Writer writer, String table, String sql) throws SQLException, IOException {
       System.out.println ("SQL: "+sql);
       
       Connection con=conInfo.getDefaultConnection();

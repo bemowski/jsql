@@ -345,7 +345,8 @@ public class DebugUtils {
    public static final String jsonDebug(Object o, boolean indent) {
       ObjectMapper om=new ObjectMapper();
       om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-      om.enable(SerializationFeature.INDENT_OUTPUT);
+      if (indent)
+         om.enable(SerializationFeature.INDENT_OUTPUT);
       try {
          if (o == null)
             return "null";

@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -106,7 +107,9 @@ public class SQLFormatter extends AbstractFormatter {
          if (colType == Types.DATE) {
             return "DATE '"+DATE_FORMAT.format((java.util.Date)o)+"'";
          } else if (colType == Types.TIMESTAMP) {
-            return "TIMESTAMP '"+TIMESTAMP_FORMAT.format((java.util.Date)o)+"'";
+            Timestamp timestamp=(Timestamp)o;
+            
+            return "TIMESTAMP '"+TIMESTAMP_FORMAT.format((java.util.Date)o)+"."+timestamp.getNanos()+"'";
          } else if (colType == Types.TIME) {
             return "TIME '"+TIME_FORMAT.format((java.util.Date)o)+"'";
          } else {
@@ -133,7 +136,7 @@ public class SQLFormatter extends AbstractFormatter {
       
       sb.append("/*\n");
       sb.append(" * Export from "+conInfo.getUsername()+" on "+conInfo.getUrl()+"\n");
-      sb.append(" * SQL: "+sql+"\n");
+      sb.append(" * SQL: \n"+sql+"\n");
       sb.append(" * Export on "+df.format(new java.util.Date())+"\n");
       sb.append(" */\n\n");
       

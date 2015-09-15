@@ -47,7 +47,7 @@ public class CommandProcessor implements LineModeProcessor {
       
       List<String> commands=Arrays.asList(
             new String[] {"connect", "reconnect", "disconnect", "exit", "quit", 
-                  "describe", "export", "show",
+                  "describe", "export", "show", "exportsql",
                   
                   // fixme: these should go into the "ShowCommand"
                   "show db", "show tables", "show views", "show connection",
@@ -58,7 +58,8 @@ public class CommandProcessor implements LineModeProcessor {
                   // Fixme: these should move to LogLevelCommand
                   "debug", "trace",
                   
-                  "select", "insert", "update", "delete", "create", "drop", 
+                  "select", "insert", "update", "delete", "create", "drop",
+                  "alter",
                   "dbm", "clear",
                   "help", "?"});
       StringsCompleter cc=new StringsCompleter(commands);
@@ -156,6 +157,8 @@ public class CommandProcessor implements LineModeProcessor {
                return new PreparedStatementProcessor(jsql);
             case "export":
                return new ExportProcessor(jsql, line);
+            case "exportsql":
+               return new ExportQueryProcessor(jsql, line);
             case "dbm":
                if (!jsql.isConnected()) {
                   console.warn("Not Connected.");
@@ -174,6 +177,7 @@ public class CommandProcessor implements LineModeProcessor {
             case "delete":
             case "drop":
             case "create":
+            case "alter":
                SQLProcessor sp=new SQLProcessor(jsql);
                sp.execute(line);
                break;

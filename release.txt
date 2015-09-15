@@ -1,5 +1,11 @@
 JSQL Release Highlights
 
+1.2.14
+      - Export SQL processor
+
+1.2.13 
+      - Create connections with connecton proerties.
+
 1.2.12 
       - Max number of show tables 500->5000
 

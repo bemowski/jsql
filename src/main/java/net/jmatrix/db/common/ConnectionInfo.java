@@ -206,13 +206,39 @@ public class ConnectionInfo
    
    @JsonIgnore
    public boolean isConnected() {
-      return connection != null;
+      if (connection == null)
+         return false;
+      
+
+      try {
+         if (connection.isClosed()) {
+            connection=null;
+            return false;
+         }
+         
+         return connection.isValid(10000);
+      } catch (Exception ex) {
+         log.warn("Connection invalid: "+ex);
+         connection=null;
+         return false;
+      }
    }
    
    public Connection initDefaultConnection() throws SQLException {
       if (connection == null) {
          Connection con=connect();
          setDefaultConnection(con);
+      } else {
+         boolean valid=false;
+         try {
+            valid=connection.isValid(10000);
+         } catch (Exception ex) {
+            log.warn("Connection "+this.toString()+
+                  " is not valid. Attempting reconnect...");
+            valid=false;
+         }
+         if (!valid)
+            setDefaultConnection(connect());
       }
       return connection;
    }
@@ -243,8 +269,6 @@ public class ConnectionInfo
          else {
             con=DriverManager.getConnection(url, props());
          }
-         
-         
       } catch (Exception ex) {
          throw new SQLException("Cannot connect: "+ex);
       }

@@ -371,7 +371,14 @@ public class JSQL {
 
       banner.append("    Driver  class: "+conInfo.getDriverClass()+"\n");
       banner.append("          version: "+driver.getMajorVersion()+"."+driver.getMinorVersion()+"\n");
+      if (conInfo.getProperties() != null && conInfo.getProperties().size() > 0) {
+         banner.append("       Properties: "+DebugUtils.jsonDebug(conInfo.getProperties(), false)+"\n");
+      }
+      
       banner.append("\n");
+      
+
+      
       banner.append("    Connected as "+conInfo.getUsername()+" to "+conInfo.getUrl()+"\n");
       
       banner.append("    Flavor: "+conInfo.getFlavor()+"\n");

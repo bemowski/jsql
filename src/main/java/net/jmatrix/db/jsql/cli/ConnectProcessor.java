@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import jline.console.completer.Completer;
+import net.jmatrix.db.common.DebugUtils;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
 import net.jmatrix.db.drivers.DriverMap;
@@ -21,16 +22,22 @@ public class ConnectProcessor implements LineModeProcessor {
    
    JSQL jsql=null;
    
-   static String prompts[]=new String[]{DRIVER, URL, USER, PASS};
+   static String prompts[]=new String[]{DRIVER, URL, USER, PASS, "properties"};
    
    static String defaults[]=new String[]{"oracle.jdbc.driver.OracleDriver", 
-         "", "", ""};
+         "", "", "", "n"};
    
    int pointer=0;
    String prompt=null;
    String def=null;
    
+   boolean propsmode=false;
+   String currentPropKey=null;
+   
+   
    Map<String, String> values=new HashMap<String,String>();
+   
+   Map<String, String> props=new HashMap<String, String>();
    
    public ConnectProcessor(JSQL j, String line) {
       jsql=j;
@@ -46,55 +53,100 @@ public class ConnectProcessor implements LineModeProcessor {
    
    @Override
    public String prompt() {
-      prompt=prompts[pointer];
-      def=defaults[pointer];
       
-      if (prompt.startsWith("password") && def != null) {
-         // mask password.
-         def=def.replaceAll(".", "\\*");
+      if (propsmode) {
+         if (currentPropKey == null) {
+            prompt="property.key";
+            def=null;
+         } else {
+            prompt="property.value";
+            
+            String oldval=props.get(currentPropKey);
+            if (oldval != null)
+               def=oldval;
+            else
+               def=null;
+         }
+      }
+      else {
+         prompt=prompts[pointer];
+         def=defaults[pointer];
+         
+         if (prompt.startsWith("password") && def != null) {
+            // mask password.
+            def=def.replaceAll(".", "\\*");
+         }
+         
+         pointer++;
       }
       
-      pointer++;
       
-      return prompt+" ["+def+"]>";
+      return prompt+
+            (def == null ? ">":" ["+def+"]>");
    }
 
    @Override
    public LineModeProcessor processLine(String line) {
       
       line=line.trim();
-      if (line.length() == 0) {
-         values.put(prompt, def);
+      
+      if (!propsmode) {
+         if (line.length() == 0) {
+            values.put(prompt, def);
+         } else {
+            values.put(prompt, line);
+            defaults[pointer-1]=line;
+         }
       } else {
-         values.put(prompt, line);
-         defaults[pointer-1]=line;
+         if (line.length() == 0) {
+            propsmode=false;
+            values.remove("properties");
+         } else {
+            if (currentPropKey != null) {
+               props.put(currentPropKey, line);
+               currentPropKey=null;
+            } else {
+               currentPropKey=line;
+            }
+         }
       }
       
-      
       if (pointer==prompts.length) {
-         connect();
-         return null;
+         if (values.get("properties") != null && values.get("properties").equals("y")) {
+            propsmode=true;
+            return this;
+         } else {
+            connect();
+            return null;
+         }
       }
       return this;
    }
    
    void connect() {
+      console.debug("Connecting: \n"+DebugUtils.jsonDebug(values));
+      console.debug("Properties: \n"+DebugUtils.jsonDebug(props));
+      
       String user=values.get(USER);
       
       // check for oracle style "sys as sysdba" usernames.
-      Map<String, String> p=null;
       String usercomponents[]=user.split("\\ ");
       if (usercomponents.length == 3 && usercomponents[1].equals("as")) {
-         p=new HashMap<String, String>();
-         p.put("internal_logon", usercomponents[2]) ;
+         //p=new HashMap<String, String>();
+         props.put("internal_logon", usercomponents[2]) ;
          user=usercomponents[0];
          
-         console.info("Connecting as user="+user+", proeprties: "+p);
+         console.info("Connecting as user="+user+", proeprties: "+props);
       }
       
       String url=values.get(URL);
+      if (url == null) {
+         console.error("Cannot connect with a Null connection URL");
+         return;
+      }
+      
       try {
-         jsql.connect(values.get(DRIVER), url, user, values.get(PASS), p);
+         jsql.connect(values.get(DRIVER), url, user, values.get(PASS), props);
       } catch (Exception ex) {
          console.error("Error connecting to "+user+" at "+url, ex);
       }

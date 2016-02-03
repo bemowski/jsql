@@ -19,7 +19,7 @@ import net.jmatrix.db.schema.DBM;
 import net.jmatrix.db.schema.action.Action;
 import net.jmatrix.db.schema.data.v2.DBMLock;
 
-public class DBMProcessor implements LineModeProcessor {
+public class DBMProcessor extends AbstractLineProcessor {
    static TextConsole console=SysConsole.getConsole();
    
    DBM dbm=null;
@@ -304,28 +304,4 @@ public class DBMProcessor implements LineModeProcessor {
          }
       }
    }
-   
-   boolean confirm(String message, String options[], String positive) throws IOException {
-      String x=confirm(message, options);
-      return x.equals(positive);
-   }
-   
-   String confirm(String message, String options[]) throws IOException {
-      try {
-         List<String> lopt=Arrays.asList(options);
-         
-         console.setCompleters(Arrays.asList(new Completer[] {new StringsCompleter(lopt)}));
-         String line=console.readLine(message+" "+lopt+"?").trim();
-         while (!lopt.contains(line)) {
-            console.warn("Please choose from available options");
-            line=console.readLine(message+" "+lopt+"?").trim();
-         }
-         return line;
-         
-      } catch (Exception ex) {
-         console.warn("Error confirming selection.", ex); // should never happen
-         return "";
-      }
-   }
-   
 }

@@ -45,5 +45,7 @@ public interface RSFormatter {
     */
    public void setMaxRows(int r);
    
+   public int getLastRowCount();
+   
    public void set(String key, Object value);
 }

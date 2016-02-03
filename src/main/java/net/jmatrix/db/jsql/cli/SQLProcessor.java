@@ -11,15 +11,20 @@ import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
 import net.jmatrix.db.jsql.JSQL;
 import net.jmatrix.db.jsql.formatters.RSFormatter;
+import net.jmatrix.db.jsql.history.SQLHistory;
 
 public class SQLProcessor implements LineModeProcessor {
    static final TextConsole console=SysConsole.getConsole();
    
    JSQL jsql=null;
+   
+   SQLHistory history=null;
+   
    StringBuilder sqlbuffer=new StringBuilder();
 
    public SQLProcessor(JSQL j) {
       jsql=j;
+      history=jsql.getSQLHistory();
    }
 
    @Override
@@ -53,6 +58,9 @@ public class SQLProcessor implements LineModeProcessor {
       if (sql.endsWith(";"))
          sql=sql.substring(0, sql.length()-1);
       
+      boolean success=false;
+      int rows=-1;
+      
       console.debug("SQL \n"+sql);
       
       Statement state=null;
@@ -63,23 +71,22 @@ public class SQLProcessor implements LineModeProcessor {
          state=jsql.getConnection().createStatement();
          
          boolean results=state.execute(sql);
-         
+         success=true;
          if (results) {
             console.debug("execute returns "+results);
-            
-            //state.getMoreResults();
             
             rs=state.getResultSet();
             
             try {
                RSFormatter formatter=jsql.getFormatter();
-            
-              console.println(formatter.format(rs));
+               
+               console.println(formatter.format(rs));
+               rows=formatter.getLastRowCount();
             } catch (Exception exx) {
                console.error("Error formatting results", exx);
             }
          } else {
-            int rows=state.getUpdateCount();
+            rows=state.getUpdateCount();
             console.info("updated "+rows+" rows.");
          }
       } catch (SQLException ex) {
@@ -88,8 +95,11 @@ public class SQLProcessor implements LineModeProcessor {
          console.error("Error exeuging sql", ex);
       } finally {
          DBUtils.close(null, state, rs);
-         long et=System.currentTimeMillis()-start;
-         console.info("sql took "+et+"ms");
+         
+         history.add(jsql.getConnectionInfo(), sql, rows, success);
+         // This is logged in command processor.
+//         long et=System.currentTimeMillis()-start;
+//         console.info("sql took "+et+"ms");
       }
    }
 

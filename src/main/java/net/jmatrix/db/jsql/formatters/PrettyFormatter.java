@@ -185,7 +185,7 @@ public class PrettyFormatter extends AbstractFormatter {
          }
          data.add(row);
       }
-      
+      lastRowCount=data.rowcount();
       return data;
    }
    

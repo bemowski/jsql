@@ -91,6 +91,10 @@ public class ExportQueryProcessor implements LineModeProcessor {
    }
    
    void export() {
+      String sql=sqlbuffer.toString();
+      if (sql.endsWith(";"))
+         sql=sql.substring(0, sql.length()-1);
+      
       String filename=values.get(FILE);
       String table=values.get(TABLE);
       try {
@@ -99,7 +103,7 @@ public class ExportQueryProcessor implements LineModeProcessor {
          
          File file=new File(filename);
          
-         export.exportSql(file, table, sqlbuffer.toString());
+         export.exportSql(file, table, sql);
       } catch (Exception ex) {
          console.error("Error exporting sql as "+table+" to "+filename, ex);
       }

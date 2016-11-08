@@ -1,14 +1,13 @@
 package net.jmatrix.db.common.console.slf4j;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.jmatrix.db.common.console.SysConsole;
-import net.jmatrix.db.common.console.TextConsole;
-
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
+
+import net.jmatrix.db.common.console.SysConsole;
+import net.jmatrix.db.common.console.TextConsole;
 
 public class ConsoleLoggerFactory implements ILoggerFactory {
    TextConsole console=SysConsole.getConsole();

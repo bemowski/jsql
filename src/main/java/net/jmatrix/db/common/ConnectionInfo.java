@@ -212,6 +212,7 @@ public class ConnectionInfo
 
       try {
          if (connection.isClosed()) {
+            log.debug("Connection is closed.");
             connection=null;
             return false;
          }
@@ -246,12 +247,14 @@ public class ConnectionInfo
    public Connection connect() throws SQLException {
       try {
          Class.forName(driverClass);
+         log.debug("Driver class loaded.");
       } catch (Exception ex) {
          throw new SQLException("Cannot load driver '"+driverClass+"': "+ex);
       }
       
       try {
          driver=DriverManager.getDriver(url);
+         log.debug("Driver for URL is "+driver);
       } catch (Exception ex) {
          throw new SQLException("Error getting driver for url '"+url+"' "+ex);
       }
@@ -269,6 +272,7 @@ public class ConnectionInfo
          else {
             con=DriverManager.getConnection(url, props());
          }
+         log.debug("Connection: "+con);
       } catch (Exception ex) {
          throw new SQLException("Cannot connect: "+ex);
       }

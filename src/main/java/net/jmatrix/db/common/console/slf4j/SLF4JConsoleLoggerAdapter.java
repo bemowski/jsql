@@ -5,6 +5,7 @@ import net.jmatrix.db.common.console.TextConsole.Level;
 
 import org.slf4j.helpers.MarkerIgnoringBase;
 
+@SuppressWarnings("serial")
 public class SLF4JConsoleLoggerAdapter extends MarkerIgnoringBase {
    String name=null;
    TextConsole console=null;

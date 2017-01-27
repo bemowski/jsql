@@ -1,7 +1,6 @@
 package net.jmatrix.db.jsql.cli;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,6 +18,7 @@ import net.jmatrix.db.jsql.JSQL;
 import net.jmatrix.db.jsql.SQLRunner;
 import net.jmatrix.db.jsql.cli.commands.Command;
 import net.jmatrix.db.jsql.cli.commands.DescribeCommand;
+import net.jmatrix.db.jsql.cli.commands.HistoryCommand;
 import net.jmatrix.db.jsql.cli.commands.LogLevelCommand;
 import net.jmatrix.db.jsql.cli.commands.SetCommand;
 import net.jmatrix.db.jsql.cli.commands.ShowCommand;
@@ -43,9 +43,9 @@ public class CommandProcessor implements LineModeProcessor {
       commands.add(new DescribeCommand(jsql));
       commands.add(new SetCommand(jsql));
       commands.add(new LogLevelCommand(jsql));
+      commands.add(new HistoryCommand(jsql));
       
-      
-      List<String> commands=Arrays.asList(
+      List<String> completionStrings=Arrays.asList(
             new String[] {"connect", "reconnect", "disconnect", "exit", "quit", 
                   "describe", "export", "show", "exportsql",
                   
@@ -58,11 +58,13 @@ public class CommandProcessor implements LineModeProcessor {
                   // Fixme: these should move to LogLevelCommand
                   "debug", "trace",
                   
+                  "history",
+                  
                   "select", "insert", "update", "delete", "create", "drop",
                   "alter",
                   "dbm", "clear",
                   "help", "?"});
-      StringsCompleter cc=new StringsCompleter(commands);
+      StringsCompleter cc=new StringsCompleter(completionStrings);
       
       CustomCommandCompleter customCompleter=new CustomCommandCompleter(cc);
       
@@ -103,6 +105,8 @@ public class CommandProcessor implements LineModeProcessor {
          "      tables [spec] - list tables\n"+
          "      views - list views\n"+
          "      connection - list views\n"+
+         "   history [int] [search <query>] \n"+
+         "      display sql history\n"+
          "   describe <table> - show columns for the table.\n"+
          "   export [table]: prompts to export data as inserts from a file.\n"+
          "\n"+
@@ -169,7 +173,6 @@ public class CommandProcessor implements LineModeProcessor {
                jsql.disconnect();
                break;
                
-
                
             case "select":
             case "insert":
@@ -200,7 +203,7 @@ public class CommandProcessor implements LineModeProcessor {
                
                break;
                
-            case "history":
+            //case "history":
                
                
             case "":

@@ -1,7 +1,9 @@
 package net.jmatrix.db.common;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Reads and writes files to and from ~/.config/[app]. 
@@ -18,7 +20,8 @@ public class DotConfig {
    }
    
    private void init() {
-      dir=new File(System.getProperty("user.home")+"/.config/"+app);
+      dir=new File(System.getProperty("user.home")+File.separator+
+            ".config"+File.separator+app);
       
       if (!dir.exists()) {
          dir.mkdirs();
@@ -44,5 +47,17 @@ public class DotConfig {
          return null;
       }
       return StreamUtil.readToString(f);
+   }
+   
+   public InputStream getInputStream(String filename) throws IOException {
+      File f=new File(dir, filename);
+      if (!f.exists()) {
+         return null;
+      }
+      return new FileInputStream(f);
+   }
+   
+   public File getFile(String filename) {
+      return new File(dir, filename);
    }
 }

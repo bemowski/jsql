@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+
 import net.jmatrix.db.common.ArgParser;
 import net.jmatrix.db.common.ClassLogFactory;
 import net.jmatrix.db.common.ConnectionInfo;
@@ -22,11 +24,11 @@ import net.jmatrix.db.jsql.cli.CommandProcessor;
 import net.jmatrix.db.jsql.cli.LineModeProcessor;
 import net.jmatrix.db.jsql.formatters.PrettyFormatter;
 import net.jmatrix.db.jsql.formatters.RSFormatter;
+import net.jmatrix.db.jsql.history.JSONHistory;
+import net.jmatrix.db.jsql.history.SQLHistory;
 import net.jmatrix.db.jsql.model.RecentConnections;
 import net.jmatrix.db.schema.DBM;
 import net.jmatrix.db.schema.action.Action;
-
-import org.slf4j.Logger;
 
 /**
  * 
@@ -45,6 +47,8 @@ public class JSQL {
    //TextConsole console=null;
    
    RecentConnections recentConnections=null;
+   SQLHistory history=null;
+   
    
    SystemInProcessor sysInProc=null;
    CommandProcessor commandProcessor=null;
@@ -66,6 +70,13 @@ public class JSQL {
          recentConnections=RecentConnections.load(JSQL);
       } catch (Exception ex) {
          console.error("Error loading recent connections", ex);
+      }
+      
+      try {
+         history=new JSONHistory();
+         history.load();
+      } catch (Exception ex) {
+         console.error("Error loading sql history", ex);
       }
    }
    
@@ -429,5 +440,9 @@ public class JSQL {
    
    public RecentConnections getRecentConnections() {
       return recentConnections;
+   }
+   
+   public SQLHistory getSQLHistory() {
+      return history;
    }
 }

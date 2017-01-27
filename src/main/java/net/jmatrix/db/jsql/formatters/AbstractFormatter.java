@@ -17,6 +17,8 @@ public abstract class AbstractFormatter implements RSFormatter {
    
    protected int maxrows=Integer.MAX_VALUE;
    
+   protected int lastRowCount=-1;
+   
    Map<String, Object> parameters=new HashMap<String, Object>();
    
    protected AbstractFormatter(ConnectionInfo ci){
@@ -25,7 +27,11 @@ public abstract class AbstractFormatter implements RSFormatter {
    
    protected AbstractFormatter() {}
    
-   
+   public int getLastRowCount() {
+      int lrc=lastRowCount;
+      lastRowCount=-1;
+      return lrc;
+   }
    
    @Override
    public String toString() {

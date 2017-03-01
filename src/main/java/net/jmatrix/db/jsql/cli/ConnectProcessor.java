@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import jline.console.completer.Completer;
 import net.jmatrix.db.common.DebugUtils;
+import net.jmatrix.db.common.StringUtils;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
 import net.jmatrix.db.drivers.DriverMap;
@@ -71,6 +72,10 @@ public class ConnectProcessor implements LineModeProcessor {
       else {
          prompt=prompts[pointer];
          def=defaults[pointer];
+         
+         if (prompt.equals(URL) && StringUtils.empty(def)) {
+            def=StringUtils.notNull(DriverMap.getUrlTemplate(values.get(DRIVER)));
+         }
          
          if (prompt.startsWith("password") && def != null) {
             // mask password.

@@ -160,7 +160,9 @@ IS_GENERATEDCOLUMN String => Indicates whether this is a generated column
          
          ConnectionInfo ci=jsql.getConnectionInfo();
          
-         rs=dbmd.getColumns(ci.getCatalog(), ci.getSchema(), table.toUpperCase(), null);
+         console.debug("catalog="+ci.getCatalog()+", schema="+ci.getSchema()+", table="+table.toUpperCase());
+         
+         rs=dbmd.getColumns(ci.getCatalog(), ci.getSchema(), table, null);
 
          PrettyFormatter pf=new PrettyFormatter(jsql.getConnectionInfo(), jsql.getConsole());
          StringWriter sw=new StringWriter();

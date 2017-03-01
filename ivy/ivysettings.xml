@@ -13,10 +13,10 @@
       <ibiblio name="maven2" root="${maven2.root}" m2compatible="true"/>
 
     
-      <filesystem name="user-local">
-         <ivy pattern="${local.root}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
-         <artifact pattern="${local.root}/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />
-         <artifact pattern="${local.root}/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+      <filesystem name="user-local" m2compatible="true">
+         <ivy pattern="${local.root}/[organisation]/[module]/[revision]/[artifact]-[type]-[revision].[ext]" />
+         <artifact pattern="${local.root}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+         <artifact pattern="${local.root}/[organisation]/[module]/[revision]/[artifact].[ext]" />
       </filesystem>
       <!-- 
       <svn name="jmatrix-shared" userName="${svn.user}"
@@ -35,13 +35,13 @@
          <artifact pattern="public/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
       </svn>
        -->
-      <sftp name="jmatrix-ssh-shared" host="jmatrix.net" user="bemo" keyFile="/home/bemo/.ssh/id_dsa">
+      <sftp name="jmatrix-ssh-shared" host="repo.jmatrix.net" user="bemo" keyFile="/home/bemo/.ssh/id_rsa">
          <ivy pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
          <ivy pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[artifact].[ext]" />
          <artifact pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />
          <artifact pattern="/data/ivy-repo/shared/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
       </sftp>
-      <sftp name="jmatrix-ssh-public" host="jmatrix.net" user="bemo" keyFile="/home/bemo/.ssh/id_dsa">
+      <sftp name="jmatrix-ssh-public" host="repo.jmatrix.net" user="bemo" keyFile="/home/bemo/.ssh/id_rsa">
          <ivy pattern="/data/ivy-repo/public/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
          <ivy pattern="/data/ivy-repo/public/[organisation]/[module]/[revision]/[artifact].[ext]" />
          <artifact pattern="/data/ivy-repo/public/[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" />

@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="ivy-lib/build/jackson-core.jar"/>
 	<classpathentry kind="lib" path="ivy-lib/build/jackson-databind.jar"/>
 	<classpathentry kind="lib" path="ivy-lib/build/jline.jar"/>
-	<classpathentry kind="lib" path="ivy-lib/build/slf4j-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="ivy-lib/build/slf4j-api.jar"/>
 	<classpathentry kind="output" path="eclipse_classes"/>
 </classpath>

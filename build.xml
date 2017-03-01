@@ -141,9 +141,10 @@
         <unjar src="ivy-lib/runtime/jackson-core.jar" dest="build/dep-classes" />
         <unjar src="ivy-lib/runtime/jline.jar" dest="build/dep-classes" />
         <unjar src="ivy-lib/runtime/ojdbc7_g.jar" dest="build/dep-classes" />
-        <unjar src="ivy-lib/runtime/sqljdbc-4.0.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/mssql-jdbc.jar" dest="build/dep-classes" />
         <unjar src="ivy-lib/runtime/mysql-connector-java.jar" dest="build/dep-classes" />
         <unjar src="ivy-lib/runtime/jtds.jar" dest="build/dep-classes" />
+        <unjar src="ivy-lib/runtime/postgresql.jar" dest="build/dep-classes" />
 
         <unjar src="ivy-lib/runtime/slf4j-api.jar" dest="build/dep-classes" />
 

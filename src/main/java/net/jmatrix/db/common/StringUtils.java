@@ -62,7 +62,17 @@ public class StringUtils {
       return s;
    }
    
+   public static final boolean empty(String s) {
+      return s==null||s.length()==0;
+   }
+   
    public static void main(String args[]) {
       shortUUID();
+   }
+
+   public static final String notNull(String s) {
+      if (s == null)
+         return "";
+      return s;
    }
 }

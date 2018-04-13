@@ -6,3 +6,6 @@ dist-tmp
 ivy-lib
 .ant-targets-build.xml
 *~
+.idea
+*.iml
+

@@ -48,12 +48,13 @@ public class CSVFormatter extends AbstractFormatter {
       return rowcount;
    }
    
-   /** A little CSV escapting... */
+   /** A little CSV escaping... */
    static final String asString(Object o) {
       String val=null;
       
       if (o == null)
-         val="NULL";
+         return "\"NULL\"";
+      
       val=o.toString();
       
       val.replace("\"", "\"\"");

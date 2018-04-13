@@ -108,7 +108,8 @@ public class CommandProcessor implements LineModeProcessor {
          "   history [int] [search <query>] \n"+
          "      display sql history\n"+
          "   describe <table> - show columns for the table.\n"+
-         "   export [table]: prompts to export data as inserts from a file.\n"+
+         "   export [table]: export an entire table as CSV or SQL.\n"+
+         "   exportsql: export a single query\n"+
          "\n"+
          "   clear: clear the screen\n";
          ;

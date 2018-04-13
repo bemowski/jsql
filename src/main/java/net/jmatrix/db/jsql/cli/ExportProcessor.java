@@ -8,8 +8,10 @@ import java.util.Map;
 import jline.console.completer.Completer;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
-import net.jmatrix.db.jsql.ExportSQL;
 import net.jmatrix.db.jsql.JSQL;
+import net.jmatrix.db.jsql.export.Export;
+import net.jmatrix.db.jsql.export.ExportCSV;
+import net.jmatrix.db.jsql.export.ExportSQL;
 
 public class ExportProcessor implements LineModeProcessor {
    static final TextConsole console=SysConsole.getConsole();
@@ -17,12 +19,13 @@ public class ExportProcessor implements LineModeProcessor {
    static final String TABLE="table";
    static final String FILE="file";
    static final String WHERE="where";
+   static final String FORMAT="format [csv|sql]";
    
    JSQL jsql=null;
    
-   static String prompts[]=new String[]{FILE, TABLE, WHERE};
+   static String prompts[]=new String[]{FORMAT, FILE, TABLE, WHERE};
    
-   String defaults[]=new String[]{"", "", ""};
+   String defaults[]=new String[]{"sql", "", "", ""};
    
    int pointer=0;
    String prompt=null;
@@ -35,8 +38,8 @@ public class ExportProcessor implements LineModeProcessor {
       
       String split[]=line.split("\\ ");
       if (split.length > 1) {
-         defaults[1]=split[1];
-         defaults[0]=split[1]+".sql";
+         defaults[2]=split[1];
+         defaults[1]=split[1]+".sql";
       }
    }
    
@@ -71,13 +74,22 @@ public class ExportProcessor implements LineModeProcessor {
    
    void export() {
       
+      String format=values.get(FORMAT);
       String filename=values.get(FILE);
       String table=values.get(TABLE);
       String where=values.get(WHERE);
+      
+      Export export=null;
+      
+      if (format.equalsIgnoreCase("csv")) {
+         export=new ExportCSV(jsql.getConnectionInfo());
+      } else if (format.equalsIgnoreCase("sql")) {
+         export=new ExportSQL(jsql.getConnectionInfo());
+      } else {
+         throw new RuntimeException("Invalid value for 'format' [csv|sql]: '"+format+"'");
+      }
+      
       try {
-         ExportSQL export=new ExportSQL(jsql.getConnectionInfo());
-
-         
          File file=new File(filename);
          
          export.export(file, table, where);

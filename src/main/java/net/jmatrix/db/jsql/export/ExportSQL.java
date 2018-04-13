@@ -1,4 +1,4 @@
-package net.jmatrix.db.jsql;
+package net.jmatrix.db.jsql.export;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,7 +15,7 @@ import net.jmatrix.db.common.DBUtils;
 import net.jmatrix.db.common.StreamUtil;
 import net.jmatrix.db.jsql.formatters.SQLFormatter;
 
-public class ExportSQL  {
+public class ExportSQL implements Export {
    ConnectionInfo conInfo=null;
 
    static String usage=
@@ -66,26 +66,12 @@ public class ExportSQL  {
    
    /** */
    public void export(File file, String table, String where) throws SQLException, IOException {
-      FileWriter fw=new FileWriter(file);
-      try {
-         String sql=query(table, where);
-         export(fw, table, sql);
-      } finally {
-         StreamUtil.close(fw);
-      }
-   }
-   
-   public void exportSql(File file, String tablename, String sql) throws SQLException, IOException {
-      FileWriter fw=new FileWriter(file);
-      try {
-         export(fw, tablename, sql);
-      } finally {
-         StreamUtil.close(fw);
-      }
+      String sql=query(table, where);
+      export(file, table, sql);
    }
    
    /** */
-   public void export(Writer writer, String table, String sql) throws SQLException, IOException {
+   public void exportSQL(File file, String table, String sql) throws SQLException, IOException {
       System.out.println ("SQL: "+sql);
       
       Connection con=conInfo.getDefaultConnection();
@@ -93,7 +79,7 @@ public class ExportSQL  {
       ResultSet rs=null;
       
       SQLFormatter sqlformatter=new SQLFormatter(conInfo);
-      
+      Writer writer=new FileWriter(file);
       try {
          //writer.write(header(ci, table, where));
          
@@ -105,7 +91,7 @@ public class ExportSQL  {
          System.out.println ("Exported "+rows+ " rows");
       } finally {
          DBUtils.close(null, state, rs);
-         //StreamUtil.close(fw);
+         StreamUtil.close(writer);
       }
    }
 }

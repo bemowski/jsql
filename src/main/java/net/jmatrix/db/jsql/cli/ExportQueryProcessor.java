@@ -8,8 +8,10 @@ import java.util.Map;
 import jline.console.completer.Completer;
 import net.jmatrix.db.common.console.SysConsole;
 import net.jmatrix.db.common.console.TextConsole;
-import net.jmatrix.db.jsql.ExportSQL;
 import net.jmatrix.db.jsql.JSQL;
+import net.jmatrix.db.jsql.export.Export;
+import net.jmatrix.db.jsql.export.ExportCSV;
+import net.jmatrix.db.jsql.export.ExportSQL;
 
 /**
  * The generic ExportProcessor is used to export an entire table - always
@@ -23,12 +25,13 @@ public class ExportQueryProcessor implements LineModeProcessor {
 
    static final String TABLE="virtual tablename";
    static final String FILE="file";
-   
+   static final String FORMAT="format [csv|sql]";
+
    JSQL jsql=null;
    
-   static String prompts[]=new String[]{FILE, TABLE};
+   static String prompts[]=new String[]{FORMAT, FILE, TABLE};
    
-   String defaults[]=new String[]{"", ""};
+   String defaults[]=new String[]{"csv", "", ""};
    
    int pointer=0;
    String prompt=null;
@@ -42,12 +45,6 @@ public class ExportQueryProcessor implements LineModeProcessor {
    
    public ExportQueryProcessor(JSQL j, String line) {
       jsql=j;
-      
-      String split[]=line.split("\\ ");
-      if (split.length > 1) {
-         defaults[1]=split[1];
-         defaults[0]=split[1]+".sql";
-      }
    }
    
    @Override
@@ -97,16 +94,27 @@ public class ExportQueryProcessor implements LineModeProcessor {
       
       String filename=values.get(FILE);
       String table=values.get(TABLE);
-      try {
-         ExportSQL export=new ExportSQL(jsql.getConnectionInfo());
+      String format=values.get(FORMAT);
 
-         
+      
+      Export export=null;
+      
+      if (format.equalsIgnoreCase("csv")) {
+         export=new ExportCSV(jsql.getConnectionInfo());
+      } else if (format.equalsIgnoreCase("sql")) {
+         export=new ExportSQL(jsql.getConnectionInfo());
+      } else {
+         throw new RuntimeException("Invalid value for 'format' [csv|sql]: '"+format+"'");
+      }
+      
+      try {
          File file=new File(filename);
          
-         export.exportSql(file, table, sql);
+         export.exportSQL(file, table, sql);
       } catch (Exception ex) {
-         console.error("Error exporting sql as "+table+" to "+filename, ex);
+         console.error("Error exporting from "+table+" where "+sql+" to "+filename, ex);
       }
+
    }
 
    @Override

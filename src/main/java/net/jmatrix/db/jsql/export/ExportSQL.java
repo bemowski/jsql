@@ -67,7 +67,7 @@ public class ExportSQL implements Export {
    /** */
    public void export(File file, String table, String where) throws SQLException, IOException {
       String sql=query(table, where);
-      export(file, table, sql);
+      exportSQL(file, table, sql);
    }
    
    /** */

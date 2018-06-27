@@ -1,0 +1,60 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'net.jmatrix'
+version = '1.4.0'
+
+description = """JSQL"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.7'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.3.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.3.2'
+    compile group: 'jline', name: 'jline', version:'2.12'
+    
+    // drivers
+    runtime files('jars/ojdbc7_g.jar')
+    runtime group: 'mysql', name: 'mysql-connector-java', version:'5.1.33'
+
+    testCompile group: 'junit', name: 'junit', version:'4.8.2'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'net.jmatrix.db.jsql.JSQL'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+task buildProperties {
+    doFirst {
+       println("Building properties for version ")
+       Properties props=new Properties();
+       props.load(new FileInputStream("version.properties"))
+
+       File file=new File("build/resources/main/build.properties")
+       file.getParentFile().mkdirs()
+
+       def date = new Date()
+       def formattedDate = date.format('yyyyMMdd_HHmmss')
+       
+       props.setProperty("build.time", formattedDate);
+       props.setProperty("version", version);
+       props.setProperty("build_user", System.getProperty("user.name"))
+       props.setProperty("image_tag", props.getProperty("version")+"-"+props.getProperty("build.time"))
+    
+       props.store(file.newWriter(), null)
+   }
+}
+
+processResources.dependsOn buildProperties
+
+}

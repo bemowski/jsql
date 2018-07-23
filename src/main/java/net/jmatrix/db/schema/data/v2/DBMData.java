@@ -362,7 +362,7 @@ insert into dbm_versions(id, tstamp, filepath, action, hostname, hostuser, versi
          state.setString(4, sqlState.getFile());
          state.setString(5, success?"T":"F");
          state.setInt(6, rows);
-         state.setString(7, DebugUtils.truncate(sqlState.getSql(), 4000));
+         state.setString(7, DebugUtils.truncate(sqlState.getSql(), 3900));  //col is 4000, having issue!
          state.setString(8, err);
          
          state.execute();

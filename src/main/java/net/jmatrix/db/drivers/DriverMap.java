@@ -28,6 +28,8 @@ public class DriverMap {
          return ORACLE;
       if (url.contains("jdbc:sqlserver"))
          return MS_SQL_SERVER;
+      if (url.contains("jdbc:postgresql"))
+         return POSTGRES;
       
       return null;
    }

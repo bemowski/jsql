@@ -47,7 +47,7 @@ public class ConnectionInfo
    Connection connection=null;
    Driver driver=null;
    
-   public enum Flavor {ORACLE, SQL_SERVER, MYSQL, HSQL, GENERIC};
+   public enum Flavor {ORACLE, SQL_SERVER, MYSQL, HSQL, POSTGRES, GENERIC};
    
    Flavor flavor=Flavor.GENERIC;
    
@@ -201,6 +201,8 @@ public class ConnectionInfo
             flavor=Flavor.SQL_SERVER;
          else if (lurl.contains("mysql")) 
             flavor=Flavor.MYSQL;
+         else if (lurl.contains("postgres")) 
+            flavor=Flavor.POSTGRES;
       }
    }
    

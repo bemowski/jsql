@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 public class PrettyFormatter extends AbstractFormatter {
    private static Logger log=ClassLogFactory.getLog();
 
+   protected int lastRowCount=-1;
+
    static final boolean debug=false;
    
    TextConsole console=null;

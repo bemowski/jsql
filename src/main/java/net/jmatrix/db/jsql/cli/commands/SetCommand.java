@@ -112,6 +112,12 @@ public class SetCommand extends AbstractCommand {
                case "schema":
                   jsql.getConnectionInfo().setSchema(value);
                   break;
+               case "autocommit":
+                 Boolean bool=Boolean.parseBoolean(value);
+                 console.debug("Setting autocommit to boolean "+bool);
+                  jsql.getConnectionInfo().getConnection().setAutoCommit(bool);
+                  console.debug("Autocommit: "+jsql.getConnectionInfo().getConnection().getAutoCommit());
+                  break;
                default:
                   console.warn("Don't know how to set '"+key+"' on connection.");
             }

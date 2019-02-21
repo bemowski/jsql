@@ -95,8 +95,6 @@ public class SetCommand extends AbstractCommand {
    }
    
    void set(String subsystem, String key, String value) throws Exception {
-      
-      
       switch (subsystem) {
          case "connection":
          case "con":{
@@ -113,10 +111,23 @@ public class SetCommand extends AbstractCommand {
                   jsql.getConnectionInfo().setSchema(value);
                   break;
                case "autocommit":
-                 Boolean bool=Boolean.parseBoolean(value);
+                 if (value == null) {
+                   console.error("Error - no value sent to 'set connection autocommit <value>'");
+                   return;
+                 }
+                 Boolean bool;
+                 if (value.equalsIgnoreCase("true"))
+                   bool=true;
+                 else if (value.equalsIgnoreCase("false"))
+                   bool=false;
+                 else {
+                   console.error("Cannot parse boolean from '"+value+"' - please select [true|false]");
+                   return;
+                 }
+
                  console.debug("Setting autocommit to boolean "+bool);
-                  jsql.getConnectionInfo().getConnection().setAutoCommit(bool);
-                  console.debug("Autocommit: "+jsql.getConnectionInfo().getConnection().getAutoCommit());
+                  jsql.getConnection().setAutoCommit(bool);
+                  console.debug("Autocommit: "+jsql.getConnection().getAutoCommit());
                   break;
                default:
                   console.warn("Don't know how to set '"+key+"' on connection.");

@@ -59,6 +59,8 @@ public class CommandProcessor implements LineModeProcessor {
                   "debug", "trace",
                   
                   "history",
+
+                    "commit", "rollback",
                   
                   "select", "insert", "update", "delete", "create", "drop",
                   "alter",
@@ -173,7 +175,14 @@ public class CommandProcessor implements LineModeProcessor {
             case "disconnect":
                jsql.disconnect();
                break;
-               
+
+               case "commit":
+                 jsql.getConnection().commit();
+                 break;
+
+           case "rollback":
+             jsql.getConnection().rollback();
+             break;
                
             case "select":
             case "insert":

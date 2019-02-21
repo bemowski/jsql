@@ -276,7 +276,7 @@ public class ConnectionInfo
          }
          log.debug("Connection: "+con);
       } catch (Exception ex) {
-         throw new SQLException("Cannot connect: "+ex);
+         throw new SQLException("Cannot connect: "+ex, ex);
       }
       return con;
    }

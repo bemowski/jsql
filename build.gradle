@@ -34,15 +34,23 @@ jar {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
         configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
     }
-
+}
 task buildProperties {
     doFirst {
        println("Building properties for version ")
-       Properties props=new Properties();
+       Properties props=new Properties()
        props.load(new FileInputStream("version.properties"))
 
-       File file=new File("build/resources/main/build.properties")
-       file.getParentFile().mkdirs()
+       File file=new File("${projectDir}/build/resources/main/build.properties")
+        println("Making parent dirs for "+file)
+        File parent=file.getParentFile()
+        println("Parent: "+parent.getAbsoluteFile())
+        if (parent.getAbsoluteFile().mkdirs()) {
+            println("succeeded in mkdir.")
+        }else{
+            println("Failed to mkdir.")
+            throw new Exception("Failed to create "+parent.getAbsoluteFile());
+        }
 
        def date = new Date()
        def formattedDate = date.format('yyyyMMdd_HHmmss')
@@ -58,4 +66,4 @@ task buildProperties {
 
 processResources.dependsOn buildProperties
 
-}
+

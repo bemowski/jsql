@@ -4,6 +4,7 @@ apply plugin: 'idea'
 
 group = 'net.jmatrix'
 
+
 description = """JSQL"""
 
 sourceCompatibility = 1.7
@@ -12,11 +13,11 @@ targetCompatibility = 1.7
 Properties versionProps=new Properties();
 versionProps.load(new FileInputStream("${project.rootDir}/version.properties"))
 
+version=versionProps.get("version")
 
 repositories {
      maven { url "http://repo.maven.apache.org/maven2" }
 }
-
 dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.7'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.3.2'
@@ -43,12 +44,20 @@ jar {
 
 task buildProperties {
     doFirst {
+       println("Building properties for version ")
        Properties props=new Properties();
+       props.load(new FileInputStream("version.properties"))
 
-       println("Building properties for version "+version)
-
-       File file=new File("build/resources/main/build.properties")
-       file.getParentFile().mkdirs()
+       File file=new File("${projectDir}/build/resources/main/build.properties")
+        println("Making parent dirs for "+file)
+        File parent=file.getParentFile()
+        println("Parent: "+parent.getAbsoluteFile())
+        if (parent.getAbsoluteFile().mkdirs()) {
+            println("succeeded in mkdir.")
+        }else{
+            println("Failed to mkdir.")
+            throw new Exception("Failed to create "+parent.getAbsoluteFile());
+        }
 
        def date = new Date()
        def formattedDate = date.format('yyyyMMdd_HHmmss')
@@ -66,5 +75,3 @@ task buildProperties {
 }
 
 processResources.dependsOn buildProperties
-
-

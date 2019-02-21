@@ -12,12 +12,11 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import net.jmatrix.db.common.b64.BASE64Decoder;
+import net.jmatrix.db.common.b64.BASE64Encoder;
 import net.jmatrix.db.drivers.DriverMap;
 
 import org.slf4j.Logger;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

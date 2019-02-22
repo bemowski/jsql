@@ -117,7 +117,7 @@ public class DiskVersion implements Comparable<DiskVersion> {
          
          sql=SQLUtil.stripSQLComments(sql);
          
-         List<String> sqls=SQLUtil.splitSQL(sql, ";");
+         List<String> sqls=SQLUtil.splitSQL(sql);
          
          for (String st:sqls) {
             statements.add(new SQLStatement(this, st, file));

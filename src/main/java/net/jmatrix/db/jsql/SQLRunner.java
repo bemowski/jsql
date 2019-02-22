@@ -49,7 +49,7 @@ public class SQLRunner implements Runnable {
          String sql=StreamUtil.readToString(file);
          
          sql=SQLUtil.stripSQLComments(sql);
-         List<String> statements=SQLUtil.splitSQL(sql, ";");
+         List<String> statements=SQLUtil.splitSQL(sql);
          
          console.info("About to Execute "+statements.size()+" SQL statements.");
          

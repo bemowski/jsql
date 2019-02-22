@@ -111,7 +111,7 @@ public class DBMData {
    void createV2()  throws IOException, SQLException {
       String v2clean=StreamUtil.readToString(this.getClass().getResourceAsStream("v2_clean.sql"));
       v2clean=SQLUtil.stripSQLComments(v2clean);
-      List<String> sqls=SQLUtil.splitSQL(v2clean, ";");
+      List<String> sqls=SQLUtil.splitSQL(v2clean);
       
       for (String sql:sqls) {
          log.info("Executing \n"+DebugUtils.indent(sql, 3));
@@ -137,8 +137,8 @@ public class DBMData {
       v2clean=SQLUtil.stripSQLComments(v2clean);
 
       
-      List<String> sqls=SQLUtil.splitSQL(v1back, ";");
-      sqls.addAll(SQLUtil.splitSQL(v2clean, ";"));
+      List<String> sqls=SQLUtil.splitSQL(v1back);
+      sqls.addAll(SQLUtil.splitSQL(v2clean));
       
       for (String sql:sqls) {
          log.info("Executing \n"+DebugUtils.indent(sql, 3));
@@ -152,7 +152,7 @@ public class DBMData {
       
       String v1drop=StreamUtil.readToString(this.getClass().getResourceAsStream("v1_drop.sql"));
       v1drop=SQLUtil.stripSQLComments(v1drop);
-      sqls=SQLUtil.splitSQL(v1drop, ";");
+      sqls=SQLUtil.splitSQL(v1drop);
       for (String sql:sqls) {
          log.info("Executing \n"+DebugUtils.indent(sql, 3));
          
@@ -165,7 +165,7 @@ public class DBMData {
    void migrate21() throws IOException, SQLException {
       String migrate=StreamUtil.readToString(this.getClass().getResourceAsStream("v2.1_alter.sql"));
       migrate=SQLUtil.stripSQLComments(migrate);
-      List<String> sqls=SQLUtil.splitSQL(migrate, ";");
+      List<String> sqls=SQLUtil.splitSQL(migrate);
       
       for (String sql:sqls) {
          log.info("Executing \n"+DebugUtils.indent(sql, 3));

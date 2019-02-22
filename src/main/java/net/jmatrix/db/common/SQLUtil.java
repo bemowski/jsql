@@ -67,8 +67,12 @@ public class SQLUtil {
       return sql;
    }
 
-   public static List<String> splitSQL(String sql, String delimiter) {
-     String regex=delimiter+"(?=(?:[^\\\']*\\\'[^\\\']*\\\')*[^\\\']*$)";
+   public static List<String> splitSQL(String sql) {
+    return splitSQLParser(sql);
+   }
+
+   public static List<String> splitSQLRegex(String sql) {
+     String regex="\\;(?=(?:[^\\\']*\\\'[^\\\']*\\\')*[^\\\']*$)";
      log.debug("Split regex: "+regex);
 
      //List<String> statements= Arrays.asList(sql.split(regex));
@@ -98,6 +102,35 @@ public class SQLUtil {
             statements.add(statement); 
       }
       return statements;
+   }
+
+   static List<String> splitSQLParser(String sql) {
+     List<String> tokensList = new ArrayList<String>();
+     boolean inQuotes = false;
+     StringBuilder b = new StringBuilder();
+     for (char c : sql.toCharArray()) {
+       switch (c) {
+         case ';':
+           if (inQuotes) {
+             b.append(c);
+           } else {
+             String s=b.toString().trim();
+             if (s.length() > 0)
+              tokensList.add(s);
+             b = new StringBuilder();
+           }
+           break;
+         case '\'':
+           inQuotes = !inQuotes;
+         default:
+           b.append(c);
+           break;
+       }
+     }
+     String s=b.toString().trim();
+     if (s.length() > 0)
+       tokensList.add(s);
+     return tokensList;
    }
  
    public static String jdbcTypeString (int i) {

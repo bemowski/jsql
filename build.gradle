@@ -42,6 +42,25 @@ jar {
     }
 }
 
+test {
+    systemProperty 'console', 'true'
+    systemProperty 'slfcc.debug', 'true'
+
+//    afterTest { desc, result ->
+//        println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+//        println "--------------------------------------------------------"
+//    }
+    testLogging.showStackTraces true
+    testLogging {
+        showStandardStreams true
+        showExceptions true
+        showStackTraces true
+        showCauses true
+        exceptionFormat "full"
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
+
 task buildProperties {
     doFirst {
        println("Building properties for version ")
@@ -56,7 +75,7 @@ task buildProperties {
             println("succeeded in mkdir.")
         }else{
             println("Failed to mkdir.")
-            throw new Exception("Failed to create "+parent.getAbsoluteFile());
+            //throw new Exception("Failed to create "+parent.getAbsoluteFile());
         }
 
        def date = new Date()

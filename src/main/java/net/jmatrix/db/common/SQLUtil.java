@@ -3,6 +3,7 @@ package net.jmatrix.db.common;
 import java.lang.reflect.Field;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +66,23 @@ public class SQLUtil {
       
       return sql;
    }
-   
-   /** */
+
    public static List<String> splitSQL(String sql, String delimiter) {
+     String regex=delimiter+"(?=(?:[^\\\']*\\\'[^\\\']*\\\')*[^\\\']*$)";
+     log.debug("Split regex: "+regex);
+
+     //List<String> statements= Arrays.asList(sql.split(regex));
+     List<String> statements=new ArrayList<>();
+     for (String s:sql.split(regex)) {
+       s=s.trim();
+       if (s.length() > 0)
+        statements.add(s.trim());
+     }
+     return statements;
+   }
+
+   /** */
+   public static List<String> splitSQLOLD(String sql, String delimiter) {
       List<String> statements=new ArrayList<String>();
       
       StringTokenizer st=new StringTokenizer(sql, delimiter, false);
